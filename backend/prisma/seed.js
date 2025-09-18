@@ -51,125 +51,210 @@ async function upsertNgos() {
   }
 }
 
+// REPLACE only the upsertVillages function in your seed.js with this block
+
 async function upsertVillages() {
-  // NOTE: keep names same as earlier seed
-    const villages = [
-    {
-      name: 'Talwandi Rai Dadu',
-      district: null,
-      contacts: [
-        { name: 'Anuj Sharma', phone: '7087777857', role: 'PATWARI' },
-        { name: 'Dalbir Singh', phone: null, role: 'SARPANCH' },
-        { name: 'Jagjit Singh', phone: '9855577549', role: 'NUMBERDAR' }
-      ]
-    },
-    {
-      name: 'Machiwahla',
-      district: null,
-      contacts: [
-        { name: 'Pardeep Kumar', phone: '9464226971', role: 'PATWARI' },
-        { name: 'Kulwinder Kaur', phone: '9855168216', role: 'SARPANCH' },
-        { name: 'Harjit Singh', phone: '9855168216', role: 'NUMBERDAR' }
-      ]
-    },
-    {
-      name: 'Ghonewal',
-      district: null,
-      contacts: [
-        { name: 'Gorav Manan', phone: '8460235211', role: 'PATWARI' },
-        { name: 'Amarjit Singh', phone: '9779393024', role: 'SARPANCH' },
-        { name: 'Prithvipal Singh', phone: '9814738246', role: 'NUMBERDAR' }
-      ]
-    },
-    {
-      name: 'Jatta',
-      district: null,
-      contacts: [
-        { name: 'Pardeep Kumar', phone: '9464226971', role: 'PATWARI' },
-        { name: 'Harjit Kaur', phone: '9814197530', role: 'SARPANCH' },
-        { name: 'Balwinder Singh', phone: '9914723920', role: 'NUMBERDAR' }
-      ]
-    },
-    {
-      name: 'Pashiya',
-      district: null,
-      contacts: [
-        { name: 'Pardeep Kumar', phone: '9464226971', role: 'PATWARI' },
-        { name: 'Mehal Singh', phone: '7973902280', role: 'SARPANCH' },
-        { name: 'Kulbir Singh', phone: '9465487654', role: 'NUMBERDAR' }
-      ]
-    },
-    {
-      name: 'Singoke',
-      district: null,
-      contacts: [
-        { name: 'Sarbjit Singh', phone: '7087958474', role: 'PATWARI' },
-        { name: 'Mandeep Kaur', phone: '9878398573', role: 'SARPANCH' },
-        { name: 'Gurmeet Singh', phone: '8725907946', role: 'NUMBERDAR' }
-      ]
-    },
-    {
-      name: 'Nisoke',
-      district: null,
-      contacts: [
-        { name: 'Pardeep Kumar', phone: '9464226971', role: 'PATWARI' },
-        { name: 'Dalbir Kaur', phone: '8872233970', role: 'SARPANCH' },
-        { name: 'Kuldeep Singh', phone: '9914181435', role: 'NUMBERDAR' }
-      ]
-    },
-    {
-      name: 'Abadi Chandigarh',
-      district: null,
-      contacts: [
-        { name: 'Parmjit Singh', phone: '7968828119', role: 'PATWARI' },
-        { name: 'Balraj Singh', phone: '9465482616', role: 'SARPANCH' }
-      ]
-    },
-    {
-      name: 'Shehzada',
-      district: null,
-      contacts: [
-        { name: 'Pardeep Kumar', phone: '9464226971', role: 'PATWARI' },
-        { name: 'Manjit Kaur', phone: '7681958676', role: 'SARPANCH' },
-        { name: 'Harbhajan Singh', phone: '9592190323', role: 'NUMBERDAR' }
-      ]
-    },
-    {
-      name: 'Panj Gari Wahla',
-      district: null,
-      contacts: [
-        { name: 'Sarbjit Singh', phone: '7087958474', role: 'PATWARI' },
-        { name: 'Rajwinder Singh', phone: '9914304120', role: 'SARPANCH' },
-        { name: 'Surinder Kumar', phone: '7380227436', role: 'NUMBERDAR' }
-      ]
-    },
-    {
-      name: 'Kot Gurbaskh',
-      district: null,
-      contacts: [
-        { name: 'Pardeep Kumar', phone: '9464226971', role: 'PATWARI' },
-        { name: 'Santokh Singh', phone: '8260000095', role: 'SARPANCH' },
-        { name: 'Kuldip Singh', phone: '9878522358', role: 'NUMBERDAR' }
-      ]
-    }
+  // full list of village names you provided
+  const villageNames = [
+    "Chak dogra","Fatewaal","Dalla malia","Tera rajpoota","Ajnala","Ibrahimpura",
+    "Riar","Sarai","Chak Phula","Chamiari","Nangal Wanjhan wala","Wanjhanwala",
+    "Kamirpura","Gujjarpura","Kotli amb","Harar kalan","Bikraur","Saidpur khurd",
+    "Hasham pura","Barlas","Balharwal","Bohgan","Gurala","Kotli kazia","Lakhuwal",
+    "Aliwal","Sheikh bhatti","Majhi miu","Sahliwal","Saido gazi","Bal labhe darya",
+    "Kamirpura (50)","Sultan mahal","Kalo mahal","Samrai","Bhandaal","Malakpur",
+    "Langarpura","Daria musa","Dujowaal","Bajwa","Dahurian","Urdhan","Bhure gill",
+    "Harar near Bhure gill","Ghonewala","Saharan","Gagomahal","Dial bhatti","Sammowal",
+    "Anaitpura","Harrar khurd","Sudhar","Nanoke","Kuralian","Abusaid","Langomahal",
+    "Dialpura","Nasar","Sarangdev","Khanwal","Granthgarh","Talwandi rai dadu",
+    "Dalla Rajpootan","Bhaini gill","Gill","Dhian singh pura","Raipur kalan","Channa",
+    "Bhainian","Sundar garh","Jafarkot","Kotli koka","Punga","Chak aul","Jagdev khurd",
+    "Chak bala","Sahowal","Thoba","Momanpura","Kotli jamiat singh","Kasowala",
+    "Arazi Kasowala","Arazi Saharan","Makowal","Jassar","Awan near ramdas","Pandori",
+    "Kotli shah habib","Nangal amb","Galab","Chaharpur","Arazi darya","Darya mansoor",
+    "Wadai cheema","Kotli barwala","Daddian","Sehzada baad","Budha Warsal","Pairewaal",
+    "Lakhuwal","Dhangai","Suffian","Kot rajada","Arazikot rajada","Panj garai wahla",
+    "Ghumrai","Singhoke","Arazi Singhoke","Phool pura","Gaggar","Kamalpura kalan",
+    "Dadraa","Kamalpura khurd","Jatta","Shehzada","Mangu naru","Talab pura",
+    "Nangal sohal","Katle","Rurewal","Motla","Jai Ram kot","Kotla Suraaj Lohar",
+    "Kotli Khehra","Jasraur","Ghoga","Tanana","Awaan Vasau","Gulgarh","Dial Rangarh",
+    "Jhunj","Nepal","Chahiya","Cheena Karam Singh","Chakk Fateh Khan","Miadi Kalan",
+    "Panju Kalal","Bhalot","Dhandal","Kotli Korotana","Bhindi Saidan","Bhindi Aulakh kalan",
+    "Bhindi Aulakh Khurd","Bhindi Nain","Wariyan","Toor","Kutiwal","Shahpur","Miadi khurd",
+    "Kot Sidhu","Rakh Othian","Othian","Kariyal","Jastarwal","Umarpura","Kakkar","Manj",
+    "Raniyan","Lodhi Gujjar","Saidpur kalan","Dugg","Tutt","Vehra","Burj","Mohleke",
+    "Mandianwala","Chuchakwal","Bhagupur Uttadh","Mujjafarpur","Channa","Kotli Dausandhi",
+    "Bhagupur Bet","Bhilowal Kakejei","Saurian","Talla","Tareen","Hasanpura","Kaakar",
+    "Awaan Lakha Singh","Khusupura","Fatah Bhelol","Sherpur","Akbarpur","Wazir Bhullar",
+    "Shero Baggah","Shero Nigah","Budda theh","Kot Mehtab","Mehmad Mandranwala","Ramdas",
+    "Kot Gurbax","Machhiwala","Pashia","Nisoke"
   ]
 
-  for (const v of villages) {
-    // create village and its contacts
-    await prisma.village.upsert({
-      where: { name: v.name },
-      update: {},
-      create: {
-        name: v.name,
-        district: v.district,
-        description: v.description,
-        contacts: {
-          create: v.contacts.map(c => ({ name: c.name, phone: c.phone, role: c.role }))
-        }
+  // mapping of village name -> patwari contact data (from the table you provided)
+  // If a village should have multiple contacts (patwari + sarpanch etc.), add an array of contacts here.
+  // NOTE: phone strings kept as in your provided data; normalize if you want digits-only.
+  const contactsMap = {
+    "Ghonewala": { name: "Gaurav Manan", phone: "83602-35211", role: "PATWARI" },
+    "Ghonewal": { name: "Gaurav Manan", phone: "83602-35211", role: "PATWARI" }, // cover alternate spelling
+    "Mehmad Mandranwala": { name: "Paramjit Singh", phone: "79688-28119", role: "PATWARI" },
+    "Kotli shah habib": { name: "Paramjit Singh", phone: "79688-28119", role: "PATWARI" },
+    "Jatta": { name: "Pardeep Kumar", phone: "94642-26971", role: "PATWARI" },
+    "Shehzada": { name: "Pardeep Kumar", phone: "94642-26971", role: "PATWARI" },
+    "Machhiwala": { name: "Pardeep Kumar", phone: "94642-26971", role: "PATWARI" },
+    "Mangu naru": { name: "Pardeep Kumar", phone: "94642-26971", role: "PATWARI" },
+    "Kot Gurbax": { name: "Pardeep Kumar", phone: "94642-26971", role: "PATWARI" },
+    "Pashia": { name: "Pardeep Kumar", phone: "94642-26971", role: "PATWARI" },
+    "Saharan": { name: "Gaurav Manan", phone: "83602-35211", role: "PATWARI" }, // (bechirag)
+    "Kasowala": { name: "Gaurav Manan", phone: "83602-35211", role: "PATWARI" }, // Kassowala variant
+    "Arazi Kasowala": { name: "Gaurav Manan", phone: "83602-35211", role: "PATWARI" },
+    "Arazi Saharan": { name: "Gaurav Manan", phone: "83602-35211", role: "PATWARI" },
+    "Arazi Daria": { name: "Harwinder Singh", phone: "99141-71111", role: "PATWARI" },
+    "Phool pura": { name: "Sarbjit Singh", phone: "70879-58474", role: "PATWARI" },
+    "Gaggar": { name: "Sarbjit Singh", phone: "70879-58474", role: "PATWARI" },
+    "Kamalpura kalan": { name: "Pardeep Kumar", phone: "94642-26971", role: "PATWARI" },
+    "Dadraa": { name: "Pardeep Kumar", phone: "94642-26971", role: "PATWARI" },
+    "Kamalpura khurd": { name: "Pardeep Kumar", phone: "94642-26971", role: "PATWARI" },
+    "Talab pura": { name: "Pardeep Kumar", phone: "94642-26971", role: "PATWARI" },
+    "Raipur kalan": { name: "Shaminder Singh", phone: "98148-49557", role: "PATWARI" },
+    "Samrai": { name: "Loveleen Singh", phone: "99760-11117", role: "PATWARI" },
+    "Dhangai": { name: "Harwinder Singh", phone: "99141-71111", role: "PATWARI" },
+    "Panj garai wahla": { name: "Sarbjit Singh", phone: "70879-58474", role: "PATWARI" },
+    "Ghumrai": { name: "Sarbjit Singh", phone: "70879-58474", role: "PATWARI" },
+    "Singhoke": { name: "Sarbjit Singh", phone: "70879-58474", role: "PATWARI" },
+    "Nangal sohal": { name: "Sarbjit Singh", phone: "70879-58474", role: "PATWARI" },
+    "Katle": { name: "Sarbjit Singh", phone: "70879-58474", role: "PATWARI" },
+    "Rurewal": { name: "Sarbjit Singh", phone: "70879-58474", role: "PATWARI" },
+    "Bhagupur Uttadh": { name: "Paramjit Singh", phone: "79688-28119", role: "PATWARI" },
+    "Gill": { name: "Anuj Sharma", phone: "70877-77857", role: "PATWARI" },
+    "Gillan": { name: "Anuj Sharma", phone: "70877-77857", role: "PATWARI" },
+    "Bhandal": { name: "Loveleen Singh", phone: "99760-11117", role: "PATWARI" },
+    "Malakpur": { name: "Loveleen Singh", phone: "99760-11117", role: "PATWARI" },
+    "Langarpura": { name: "Loveleen Singh", phone: "99760-11117", role: "PATWARI" },
+    "Dujowaal": { name: "Iqbal Singh", phone: "98783-29007", role: "PATWARI" },
+    "Bajwa": { name: "Iqbal Singh", phone: "98783-29007", role: "PATWARI" },
+    "Thoba": { name: "Gaurav Manan", phone: "83602-35211", role: "PATWARI" },
+    "Awan near ramdas": { name: "Paramjit Singh", phone: "79688-28119", role: "PATWARI" },
+    "Pandori": { name: "Paramjit Singh", phone: "79688-28119", role: "PATWARI" },
+    "Khanwal": { name: "Anuj Sharma", phone: "70877-77857", role: "PATWARI" },
+    "Granthgarh": { name: "Anuj Sharma", phone: "70877-77857", role: "PATWARI" },
+    "Talwandi rai dadu": { name: "Anuj Sharma", phone: "70877-77857", role: "PATWARI" },
+    "Dalla Rajpootan": { name: "Anuj Sharma", phone: "70877-77857", role: "PATWARI" },
+    "Jagdev khurd": { name: "Anuj Sharma", phone: "70877-77857", role: "PATWARI" },
+    "Chak bala": { name: "Anuj Sharma", phone: "70877-77857", role: "PATWARI" },
+    "Sahowal": { name: "Anuj Sharma", phone: "70877-77857", role: "PATWARI" },
+    "Balharwal": { name: "Anuj Sharma", phone: "70877-77557", role: "PATWARI" }, // note: earlier table had 'Ballarwal' typo
+    "Galab": { name: "Daljit Singh", phone: "98818-70008", role: "PATWARI" },
+    "Chaharpur": { name: "Daljit Singh", phone: "98818-70008", role: "PATWARI" },
+    "Kamirpura near Ajnala": { name: "Jhanda Singh", phone: "70091-18038", role: "PATWARI" },
+    "Nangal Amb": { name: "Daljit Singh", phone: "98818-70008", role: "PATWARI" },
+    "Chak Dogra": { name: "Jaswinder Singh", phone: "98151-44435", role: "PATWARI" },
+    "Chak dogra": { name: "Jaswinder Singh", phone: "98151-44435", role: "PATWARI" },
+    "Tera Rajpootan": { name: "Jaswinder Singh", phone: "98151-44435", role: "PATWARI" },
+    "Fatewaal": { name: "Jaswinder Singh", phone: "98151-44435", role: "PATWARI" },
+    "Dalla malia": { name: "Jaswinder Singh", phone: "98151-44435", role: "PATWARI" },
+    "Ibrahimpura": { name: "Jaspal Singh", phone: "88100-00028", role: "PATWARI" },
+    "Gujjarpura": { name: "Jhanda Singh", phone: "70091-18038", role: "PATWARI" },
+    "Punga": { name: "Shaminder Singh", phone: "98148-49557", role: "PATWARI" },
+    "Gurala": { name: "Bhupinder Kumar", phone: "98159-16986", role: "PATWARI" },
+    "Aliwal": { name: "Bhupinder Kumar", phone: "98159-16986", role: "PATWARI" },
+    "Nangal Wanjhan wala": { name: "Jhanda Singh", phone: "70091-18038", role: "PATWARI" },
+    "Wanjhanwala": { name: "Jhanda Singh", phone: "70091-18038", role: "PATWARI" },
+    "Gaggomahal": { name: "Vishal Mahajan", phone: "84271-77282", role: "PATWARI" },
+    "Samowal": { name: "Surjit Singh", phone: "94631-13453", role: "PATWARI" },
+    "Anaitpura": { name: "Surjit Singh", phone: "94631-13453", role: "PATWARI" },
+    "Chak aul": { name: "Shaminder Singh", phone: "98148-49557", role: "PATWARI" },
+    "Bikraur": { name: "Shaminder Singh", phone: "98148-49557", role: "PATWARI" },
+    "Saidpur khurd": { name: "Shaminder Singh", phone: "98148-49557", role: "PATWARI" },
+    "Barlas": { name: "Shaminder Singh", phone: "98148-49557", role: "PATWARI" },
+    "Kotli kazia": { name: "Bhupinder Kumar", phone: "98159-16986", role: "PATWARI" },
+    "Sudhar": { name: "Sandeep Singh", phone: "98550-93004", role: "PATWARI" },
+    "Nanoke": { name: "Sandeep Singh", phone: "98550-93004", role: "PATWARI" },
+    "Kuralian": { name: "Sandeep Singh", phone: "98550-93004", role: "PATWARI" },
+    "Abusaid": { name: "Sandeep Singh", phone: "98550-93004", role: "PATWARI" },
+    "Langomahal": { name: "Sandeep Singh", phone: "98550-93004", role: "PATWARI" },
+    "Sultan mahal": { name: "Loveleen Singh", phone: "99760-11117", role: "PATWARI" },
+    "Kalo mahal": { name: "Loveleen Singh", phone: "99760-11117", role: "PATWARI" },
+    "Kotli jamiat singh": { name: "Gaurav Manan", phone: "83602-35211", role: "PATWARI" },
+    "Pairewaal": { name: "Harwinder Singh", phone: "99141-71111", role: "PATWARI" },
+    "Lakhuwal": { name: "Harwinder Singh", phone: "99141-71111", role: "PATWARI" },
+    "Chak Phula": { name: "Jaspal Singh", phone: "88100-00028", role: "PATWARI" },
+    "Kotli amb": { name: "Jhanda Singh", phone: "70091-18038", role: "PATWARI" },
+    "Harar khurd": { name: "Surjit Singh", phone: "94631-13453", role: "PATWARI" },
+    "Urdhan": { name: "Joban jit Singh", phone: "98724-19190", role: "PATWARI" },
+    "Bhure gill": { name: "Joban jit Singh", phone: "98724-19190", role: "PATWARI" },
+    "Makowal": { name: "Gaurav Manan", phone: "83602-35211", role: "PATWARI" },
+    "Jassar": { name: "Gaurav Manan", phone: "83602-35211", role: "PATWARI" },
+    "Ajnala": { name: "Jaspal Singh", phone: "88100-00028", role: "PATWARI" },
+    "Riar": { name: "Jaspal Singh", phone: "88100-00028", role: "PATWARI" },
+    "Sarai": { name: "Jaspal Singh", phone: "88100-00028", role: "PATWARI" },
+    "Chamiari": { name: "Surjit Singh", phone: "94631-13454", role: "PATWARI" },
+    "Harar Kalan": { name: "Jhanda Singh", phone: "70091-18038", role: "PATWARI" },
+    "Dial Bhatti": { name: "Surjit Singh", phone: "94631-13453", role: "PATWARI" },
+    "Dialpura": { name: "Sandeep Singh", phone: "98550-93004", role: "PATWARI" },
+    "Nasar": { name: "Sandeep Singh", phone: "98550-93004", role: "PATWARI" },
+    "Sarangdev": { name: "Anuj Sharma", phone: "70877-77857", role: "PATWARI" },
+    "Bhaini gill": { name: "Anuj Sharma", phone: "70877-77857", role: "PATWARI" },
+    "Dhian singh pura": { name: "Anuj Sharma", phone: "70877-77857", role: "PATWARI" },
+    "Channa": { name: "Shaminder Singh", phone: "98148-49557", role: "PATWARI" },
+    "Bhainian": { name: "Shaminder Singh", phone: "98148-49557", role: "PATWARI" },
+    "Sundar garh": { name: "Shaminder Singh", phone: "98148-49557", role: "PATWARI" },
+    "Jafarkot": { name: "Shaminder Singh", phone: "98148-49557", role: "PATWARI" },
+    "Kotli koka": { name: "Shaminder Singh", phone: "98148-49557", role: "PATWARI" },
+    "Hasham pura": { name: "Shaminder Singh", phone: "98148-49557", role: "PATWARI" },
+    "Bohgan": { name: "Anuj Sharma", phone: "70877-77557", role: "PATWARI" }, // 'Bogan' variant
+    "Lakhuwal Near Ajnala": { name: "Bhupinder Kumar", phone: "98159-16986", role: "PATWARI" },
+    "Shaikh bhatti": { name: "Balwinder Singh", phone: "98158-11765", role: "PATWARI" },
+    "Majhi miu": { name: "Balwinder Singh", phone: "98158-11765", role: "PATWARI" },
+    "Shaliwal": { name: "Balwinder Singh", phone: "98158-11765", role: "PATWARI" },
+    "Saidogaji": { name: "Balwinder Singh", phone: "98158-11765", role: "PATWARI" },
+    "Bal labhe darya": { name: "Balwinder Singh", phone: "98158-11765", role: "PATWARI" },
+    "Kamirpura near Ramdas": { name: "Balwinder Singh", phone: "98158-11765", role: "PATWARI" },
+    "Dariya Mussa": { name: "Loveleen Singh", phone: "99760-11117", role: "PATWARI" },
+    "Dujowal": { name: "Iqbal Singh", phone: "98783-29007", role: "PATWARI" },
+    "Harrar Nere Bhuregil": { name: "Joban jit Singh", phone: "98724-19190", role: "PATWARI" },
+    "Momanpura": { name: "Gaurav Manan", phone: "83602-35211", role: "PATWARI" },
+    "Daria Mansoor": { name: "Harwinder Singh", phone: "99141-71111", role: "PATWARI" },
+    "Wadai cheema": { name: "Harwinder Singh", phone: "99141-71111", role: "PATWARI" },
+    "Kotli barwala": { name: "Sarbjit Singh", phone: "70879-58474", role: "PATWARI" },
+    "Daddian": { name: "Sarbjit Singh", phone: "70879-58474", role: "PATWARI" },
+    "Sehzada baad": { name: "Sarbjit Singh", phone: "70879-58474", role: "PATWARI" },
+    "Budha Warsal": { name: "Sarbjit Singh", phone: "70879-58474", role: "PATWARI" },
+    "Suffian": { name: "Sarbjit Singh", phone: "70879-58474", role: "PATWARI" },
+    "Kot rajada": { name: "Sarbjit Singh", phone: "70879-58474", role: "PATWARI" },
+    "Arazi Singhoke": { name: "Sarbjit Singh", phone: "70879-58474", role: "PATWARI" },
+    "Ramdas": { name: "Sarbjit Singh", phone: "70879-58474", role: "PATWARI" },
+    "Nisoke": { name: "Pardeep Kumar", phone: "94642-26971", role: "PATWARI" },
+    "Abadi Chandigarh": { name: "Paramjit Singh", phone: "79688-28119", role: "PATWARI" }
+  }
+
+  // iterate and upsert villages
+  for (const name of villageNames) {
+    const contact = contactsMap[name] || null
+
+    const createData = {
+      name,
+      district: null,
+      description: null
+    }
+
+    if (contact) {
+      createData.contacts = {
+        create: [{ name: contact.name, phone: contact.phone, role: contact.role }]
       }
-    })
+    }
+
+    try {
+      await prisma.village.upsert({
+        where: { name },
+        update: {}, // keep existing fields unchanged
+        create: createData
+      })
+    } catch (err) {
+      console.error(`Failed to upsert village "${name}":`, err)
+      // continue with next village; you can change to throw if you prefer
+    }
   }
 }
+
 
 const bcrypt = require('bcrypt')
 
