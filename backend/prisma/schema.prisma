@@ -1,0 +1,129 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ContactRole {
+  PATWARI
+  SARPANCH
+  NUMBERDAR
+  OTHER
+}
+
+model Village {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  district    String?
+  description String?
+  createdAt   DateTime @default(now())
+
+  contacts Contact[]
+
+  // relations from requests
+  requests    NGORequest[]
+  ngoVillages NgoVillage[]
+}
+
+model Contact {
+  id        String      @id @default(uuid())
+  name      String
+  phone     String?
+  role      ContactRole
+  village   Village     @relation(fields: [villageId], references: [id])
+  villageId String
+  createdAt DateTime    @default(now())
+}
+
+model SupportType {
+  id         String       @id @default(uuid())
+  key        String       @unique
+  label      String
+  createdAt  DateTime     @default(now())
+  requests   NGORequest[]
+  NgoVillage NgoVillage[]
+}
+
+model Scale {
+  id         String       @id @default(uuid())
+  key        String       @unique
+  label      String
+  createdAt  DateTime     @default(now())
+  requests   NGORequest[]
+  NgoVillage NgoVillage[]
+}
+
+model NGO {
+  id        String   @id @default(uuid())
+  name      String   @unique // 👈 add unique here
+  type      String?
+  createdAt DateTime @default(now())
+
+  requests    NGORequest[]
+  ngoVillages NgoVillage[]
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model NGORequest {
+  id            String        @id @default(uuid())
+  ngo           NGO?          @relation(fields: [ngoId], references: [id])
+  ngoId         String?
+  ngoName       String? // in case NGO created inline or external party
+  ngoType       String?
+  contactPerson String
+  designation   String?
+  contactPhone  String
+  supportType   SupportType   @relation(fields: [supportTypeId], references: [id])
+  supportTypeId String
+  scale         Scale         @relation(fields: [scaleId], references: [id])
+  scaleId       String
+  village       Village       @relation(fields: [villageId], references: [id])
+  villageId     String
+  remarks       String?
+  status        RequestStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+
+  ngoVillage NgoVillage?
+}
+
+model AdminUser {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String // hashed password
+  createdAt DateTime @default(now())
+}
+
+model NgoVillage {
+  id        String   @id @default(uuid())
+  ngo       NGO      @relation(fields: [ngoId], references: [id])
+  ngoId     String
+  village   Village  @relation(fields: [villageId], references: [id])
+  villageId String
+  createdAt DateTime @default(now())
+
+  // contact and request data copied from NGORequest at approval time
+  contactPerson String?
+  designation   String?
+  contactPhone  String?
+  supportType   SupportType? @relation(fields: [supportTypeId], references: [id])
+  supportTypeId String?
+  scale         Scale?       @relation(fields: [scaleId], references: [id])
+  scaleId       String?
+  remarks       String?
+
+  /// optional: link back to the request that caused this assignment
+  request   NGORequest? @relation(fields: [requestId], references: [id])
+  requestId String?     @unique
+
+  @@index([villageId])
+  @@index([ngoId])
+}

@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: vnuser
+      POSTGRES_PASSWORD: vnpass
+      POSTGRES_DB: vndb
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://vnuser:vnpass@db:5432/vndb
+      - PORT=4000
+    ports:
+      - '4000:4000'
+    depends_on:
+      - db
+
+  frontend:
+    image: node:18-alpine
+    working_dir: /usr/src/app
+    volumes:
+      - ./frontend:/usr/src/app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    ports:
+      - '5173:5173'
+    depends_on:
+      - backend
+
+volumes:
+  db_data:

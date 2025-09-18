@@ -1,0 +1,37 @@
+
+/* ---------- FALLBACK STYLES (paste BELOW your Tailwind directives) ---------- */
+/* basic container */
+.container {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* header */
+.header {
+  background: #0f766e; /* emerald-700 */
+  color: #fff;
+  padding: 14px 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+.header .brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:20px; }
+.header .brand .logo { width:40px; height:40px; border-radius:6px; background:#fff; color:#0f766e; display:flex; align-items:center; justify-content:center; font-weight:800; }
+.header nav { float:right; }
+.header nav a { color: #fff; margin-left:14px; text-decoration:none; font-weight:600; }
+.header nav a:hover { color: #fde68a; }
+
+/* main content */
+.card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:18px; }
+.card { background:#fff; border:1px solid #e6e6e6; padding:16px; border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,0.03); }
+.card .thumb { height:140px; background:#f3f4f6; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#9ca3af; margin-bottom:12px; }
+
+/* footer */
+.footer { text-align:center; padding:18px 8px; color:#6b7280; background:transparent; border-top:1px solid #f3f4f6; }
+
+/* responsive tweaks */
+@media (max-width:720px) {
+  .header nav { display:none; }
+  .header .menu-btn { display:inline-block; }
+}
