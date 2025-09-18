@@ -12,7 +12,7 @@ export default function VillageDetails(){
 
   useEffect(()=>{
     setLoadingVillage(true)
-    fetch('/api/villages')
+    fetch('/api/api/villages')
       .then(r => {
         if (!r.ok) throw new Error('Failed to load villages')
         return r.json()
@@ -31,7 +31,7 @@ export default function VillageDetails(){
 
   useEffect(() => {
     setLoadingAssignments(true)
-    fetch(`/api/villages/${id}/assignments`)
+    fetch(`/api/api/villages/${id}/assignments`)
       .then(r => {
         if (!r.ok) throw new Error('Failed to load assignments')
         return r.json()

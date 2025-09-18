@@ -15,7 +15,7 @@ export default function AdminRequests() {
       return
     }
 
-    fetch('/api/admin/requests', {
+    fetch('/api/api/admin/requests', {
       headers: { Authorization: 'Bearer ' + token }
     })
       .then(async r => {

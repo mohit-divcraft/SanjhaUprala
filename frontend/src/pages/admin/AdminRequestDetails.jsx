@@ -16,7 +16,7 @@ export default function AdminRequestDetails() {
       return
     }
     setLoading(true)
-    fetch(`/api/admin/requests/${id}`, { headers: { Authorization: 'Bearer ' + token } })
+    fetch(`/api/api/admin/requests/${id}`, { headers: { Authorization: 'Bearer ' + token } })
       .then(async r => {
         if (r.status === 401) {
           localStorage.removeItem('adminToken')
@@ -40,7 +40,7 @@ export default function AdminRequestDetails() {
   async function handleAction(action) {
     if (!window.confirm(`Are you sure you want to ${action} this request?`)) return
     try {
-      const res = await fetch(`/api/admin/requests/${id}/${action}`, {
+      const res = await fetch(`/api/api/admin/requests/${id}/${action}`, {
         method: 'POST',
         headers: { Authorization: 'Bearer ' + token }
       })
