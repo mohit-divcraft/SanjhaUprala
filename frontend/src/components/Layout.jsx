@@ -1,20 +1,32 @@
 import React from 'react'
 import { Link, Outlet } from 'react-router-dom'
 
-function Logo(){
-  // simple inline SVG logo
+function Logo() {
   return (
     <div className="flex items-center gap-3">
-      <div className="h-10 w-10 rounded-lg bg-white/10 flex items-center justify-center text-white font-bold shadow">
-        SU
-      </div>
-      <div>
-        <div className="text-xl font-extrabold leading-tight text-white">SANJHA UPRALA</div>
-        <div className="text-sm text-white/80">Community · Support · Uplift</div>
+       <img
+        src="/logo.png"
+        alt="Govt Punjab Logo"
+        className="h-12 w-12 object-contain"
+      />
+      <div className="flex flex-col">
+        <div className="flex items-center gap-3">
+          <div className="text-lg md:text-xl font-extrabold text-white">
+            Saanjha Uprala
+          </div>
+          <span className="px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-300 text-xs font-semibold uppercase tracking-wide">
+            Mission Chardikala
+          </span>
+        </div>
+        <div className="text-xs md:text-sm text-white/85">
+          An Initiative by the District Administration, Amritsar
+        </div>
       </div>
     </div>
   )
 }
+
+
 
 export default function Layout(){
   return (
@@ -27,7 +39,8 @@ export default function Layout(){
 
           <nav className="hidden md:flex items-center space-x-6 text-white/90">
             <Link to="/" className="hover:text-yellow-300">Home</Link>
-            <Link to="/" className="hover:text-yellow-300">Villages</Link>
+            <Link to="/ContactDetails" className="hover:text-yellow-300">Contact</Link>
+            <Link to="/villages" className="hover:text-yellow-300">Villages</Link>
             <Link to="/requirements" className="hover:text-yellow-300">Requirements</Link>
             {/* <Link to="/ngos" className="hover:text-yellow-300">NGOs</Link> */}
             <Link to="/ngos/adoptVillage">Adopt a Village</Link>

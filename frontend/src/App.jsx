@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
 import Landing from './pages/Landing'
 import VillageDetails from './pages/VillageDetails'
+import Villages from './pages/Villages'
+import ContactDetails from './pages/ContactDetails'
 import NotFound from './pages/NotFound'
 import NGORequestForm from './pages/NGORequestForm'
 
@@ -19,6 +21,8 @@ export default function App() {
         {/* Public site layout */}
         <Route path="/" element={<Layout />}>
           <Route index element={<Landing />} />
+          <Route path="villages" element={<Villages />} />
+          <Route path="ContactDetails" element={<ContactDetails />} />
           <Route path="villages/:id" element={<VillageDetails />} />
           <Route path="ngos/adoptVillage" element={<NGORequestForm />} />
           <Route path="*" element={<NotFound />} />

@@ -22,6 +22,9 @@ model Village {
   description String?
   createdAt   DateTime @default(now())
 
+  mostEffected Boolean @default(false)
+  needsHelp    Boolean @default(false)
+
   contacts Contact[]
 
   // relations from requests

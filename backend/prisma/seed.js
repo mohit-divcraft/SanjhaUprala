@@ -255,6 +255,182 @@ async function upsertVillages() {
   }
 }
 
+// --- static marking helper (paste into prisma/seed.js) ---
+/**
+ * Mark villages as needsHelp using a static list embedded in code.
+ * Edit the `needyVillageNames` array to include all names from your sheet.
+ */
+async function markNeedyVillagesStatic() {
+  // <-- put your full list of needy village names here (strings) -->
+  const needyVillageNames = [
+    "Bal labhe darya",
+"Daria musa",
+"Ghonewala",
+"Kuralia",
+"Channa",
+"Jafarkot",
+"Mehmad Mandranwala",
+"Galab",
+"Dhangai",
+"Kot rajada",
+"Panj garai wahla",
+"Ghumrai",
+"Singhoke",
+"Gaggar",
+"Nisoke",
+"Jatta",
+"Mashi wala",
+"Kot Gurbax",
+"Pashia",
+"Nangal sohal"
+  ]
+
+  if (!Array.isArray(needyVillageNames) || needyVillageNames.length === 0) {
+    console.log('markNeedyVillagesStatic: no names provided in needyVillageNames array. Skipping.')
+    return
+  }
+
+  console.log(`markNeedyVillagesStatic: will attempt to mark ${needyVillageNames.length} villages as needsHelp.`)
+
+  const notMatched = []
+  let updatedCount = 0
+
+  for (const rawName of needyVillageNames) {
+    const normalized = String(rawName || '').replace(/\s+/g, ' ').trim()
+    if (!normalized) continue
+
+    try {
+      // 1) Try case-insensitive exact match
+      const res = await prisma.village.updateMany({
+        where: { name: { equals: normalized, mode: 'insensitive' } },
+        data: { needsHelp: true }
+      })
+
+      if (res.count && res.count > 0) {
+        updatedCount += res.count
+        console.log(`Marked (exact) "${normalized}" as needsHelp (updated ${res.count}).`)
+        continue
+      }
+
+      // 2) Try loose/fuzzy matching (contains or startsWith)
+      const fuzzy = await prisma.village.updateMany({
+        where: {
+          OR: [
+            { name: { contains: normalized, mode: 'insensitive' } },
+            { name: { startsWith: normalized, mode: 'insensitive' } }
+          ]
+        },
+        data: { needsHelp: true }
+      })
+
+      if (fuzzy.count && fuzzy.count > 0) {
+        updatedCount += fuzzy.count
+        console.log(`Marked (fuzzy) "${normalized}" as needsHelp (updated ${fuzzy.count}).`)
+      } else {
+        notMatched.push(normalized)
+        console.warn(`No village found to match "${normalized}"`)
+      }
+    } catch (err) {
+      console.error(`Error while marking "${normalized}":`, err.message || err)
+    }
+  }
+
+  console.log(`markNeedyVillagesStatic: completed. updatedCount=${updatedCount}, notMatched=${notMatched.length}.`)
+  if (notMatched.length > 0) {
+    console.log('Unmatched list (first 200):')
+    notMatched.slice(0, 200).forEach(n => console.log(' -', n))
+  }
+}
+
+
+// --- static marking helper (paste into prisma/seed.js) ---
+/**
+ * Mark villages as worstAffected using a static list embedded in code.
+ * Edit the `needyVillageNames` array to include all names from your sheet.
+ */
+async function markWorstAffectedStatic() {
+  // <-- put your full list of needy village names here (strings) -->
+  const needyVillageNames = [
+    "Bal labhe darya",
+"Daria musa",
+"Ghonewala",
+"Kuralia",
+"Channa",
+"Jafarkot",
+"Mehmad Mandranwala",
+"Galab",
+"Dhangai",
+"Kot rajada",
+"Panj garai wahla",
+"Ghumrai",
+"Singhoke",
+"Gaggar",
+"Nisoke",
+"Jatta",
+"Mashi wala",
+"Kot Gurbax",
+"Pashia",
+"Nangal sohal"
+  ]
+
+  if (!Array.isArray(needyVillageNames) || needyVillageNames.length === 0) {
+    console.log('markWorstAffectedStatic: no names provided in needyVillageNames array. Skipping.')
+    return
+  }
+
+  console.log(`markWorstAffectedStatic: will attempt to mark ${needyVillageNames.length} villages as mostEffected.`)
+
+  const notMatched = []
+  let updatedCount = 0
+
+  for (const rawName of needyVillageNames) {
+    const normalized = String(rawName || '').replace(/\s+/g, ' ').trim()
+    if (!normalized) continue
+
+    try {
+      // 1) Try case-insensitive exact match
+      const res = await prisma.village.updateMany({
+        where: { name: { equals: normalized, mode: 'insensitive' } },
+        data: { mostEffected: true }
+      })
+
+      if (res.count && res.count > 0) {
+        updatedCount += res.count
+        console.log(`Marked (exact) "${normalized}" as mostEffected (updated ${res.count}).`)
+        continue
+      }
+
+      // 2) Try loose/fuzzy matching (contains or startsWith)
+      const fuzzy = await prisma.village.updateMany({
+        where: {
+          OR: [
+            { name: { contains: normalized, mode: 'insensitive' } },
+            { name: { startsWith: normalized, mode: 'insensitive' } }
+          ]
+        },
+        data: { mostEffected: true }
+      })
+
+      if (fuzzy.count && fuzzy.count > 0) {
+        updatedCount += fuzzy.count
+        console.log(`Marked (fuzzy) "${normalized}" as mostEffected (updated ${fuzzy.count}).`)
+      } else {
+        notMatched.push(normalized)
+        console.warn(`No village found to match "${normalized}"`)
+      }
+    } catch (err) {
+      console.error(`Error while marking "${normalized}":`, err.message || err)
+    }
+  }
+
+  console.log(`markWorstAffectedStatic: completed. updatedCount=${updatedCount}, notMatched=${notMatched.length}.`)
+  if (notMatched.length > 0) {
+    console.log('Unmatched list (first 200):')
+    notMatched.slice(0, 200).forEach(n => console.log(' -', n))
+  }
+}
+
+
 
 const bcrypt = require('bcrypt')
 
@@ -276,6 +452,8 @@ async function main() {
     await upsertScales()
     await upsertNgos()
     await upsertVillages()
+    await markNeedyVillagesStatic()
+    await markWorstAffectedStatic()
     await upsertAdmin()
     console.log('Seeding complete')
   } catch (err) {
