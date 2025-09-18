@@ -26,7 +26,7 @@ export default function Landing(){
 
   useEffect(()=>{
     setLoading(true)
-    fetch('/api/villages')
+    fetch('/api/api/villages')
       .then(r => r.json())
       .then(data => { setVillages(data); setLoading(false) })
       .catch(e => { console.error(e); setError('Failed to load'); setLoading(false) })

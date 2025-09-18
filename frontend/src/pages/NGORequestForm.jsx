@@ -48,7 +48,7 @@ function AddNgoModal({ open, onClose, onCreate, defaultType }) {
               if (!name.trim()) { setError('Name is required'); return }
               setLoading(true); setError(null)
               try {
-                const res = await fetch('/api/ngos', {
+                const res = await fetch('/api/api/ngos', {
                   method: 'POST',
                   headers: { 'content-type': 'application/json' },
                   body: JSON.stringify({ name: name.trim(), type })
@@ -104,10 +104,10 @@ export default function NGORequestForm(){
   useEffect(()=>{
     // fetch lists in parallel
     Promise.all([
-      fetch('/api/villages').then(r=>r.json()),
-      fetch('/api/ngos').then(r=>r.json()),
-      fetch('/api/support-types').then(r=>r.json()),
-      fetch('/api/scales').then(r=>r.json())
+      fetch('/api/api/villages').then(r=>r.json()),
+      fetch('/api/api/ngos').then(r=>r.json()),
+      fetch('/api/api/support-types').then(r=>r.json()),
+      fetch('/api/api/scales').then(r=>r.json())
     ]).then(([v, n, s, sc]) => {
       setVillages(v || [])
       setNgos(n || [])
@@ -147,7 +147,7 @@ export default function NGORequestForm(){
         remarks: form.remarks
       }
 
-      const res = await fetch('/api/ngo-requests', {
+      const res = await fetch('/api/api/ngo-requests', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(payload)
