@@ -130,3 +130,33 @@ model NgoVillage {
   @@index([villageId])
   @@index([ngoId])
 }
+
+model HouseDamageRequirement {
+  id              String   @id @default(uuid())
+  claimID         String   @unique
+  claimantName    String
+  fatherName      String?
+  gender          String?
+  age             Int?
+  mobileNumber    String?
+  district        String?
+  tehsil          String?
+  village         String?
+  fullAddress     String?
+
+  surveyType      String?   // e.g. "Housedamage" (kept for reference)
+  createdAt       DateTime  @default(now())
+}
+
+model SchoolStationeryRequirement {
+  id               String   @id @default(uuid())
+  srNo             Int?     // original Sr No in the sheet (optional)
+  blockName        String
+  schoolName       String
+  studentStrength  Int?     // Total Strength of Student
+  requirementCount Int?     // Requirement of Stationery / Uniform (as provided)
+  notes            String?  // optional extra info
+  createdAt        DateTime @default(now())
+
+  @@index([blockName])
+}

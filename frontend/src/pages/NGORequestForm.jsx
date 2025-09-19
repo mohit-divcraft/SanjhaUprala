@@ -183,7 +183,7 @@ export default function NGORequestForm(){
 
   return (
     <div className="max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Interest Form for Adoption of Village</h1>
+      <h1 className="text-2xl font-bold mb-4">Request for Adoption of Village</h1>
 
       {/* <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
         <p className="text-sm text-gray-800 leading-relaxed">
@@ -237,13 +237,13 @@ export default function NGORequestForm(){
         </div>
 
         {/* Scale of involvement (from DB) */}
-        <div>
+        {/* <div>
           <SmallLabel>Please indicate the scale of your potential involvement</SmallLabel>
           <select className="w-full border rounded p-2" value={form.scaleId} onChange={e=>update('scaleId', e.target.value)}>
             <option value="">Select scale</option>
             {scales.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
           </select>
-        </div>
+        </div> */}
 
         {/* Village dropdown */}
         <div>

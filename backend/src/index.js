@@ -292,6 +292,32 @@ app.get('/api/villages/:id/assignments', async (req, res) => {
   }
 })
 
+// GET all house damage requirements
+app.get('/api/houseDamageRequirments', async (req, res) => {
+  try {
+    const data = await prisma.houseDamageRequirement.findMany({
+      orderBy: { village: 'asc' }
+    })
+    res.json(data)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to fetch requirements' })
+  }
+})
+
+// GET all house damage requirements
+app.get('/api/schoolStationeryRequirements', async (req, res) => {
+  try {
+    const data = await prisma.schoolStationeryRequirement.findMany({
+      orderBy: { schoolName: 'asc' }
+    })
+    res.json(data)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to fetch requirements' })
+  }
+})
+
 
 
 

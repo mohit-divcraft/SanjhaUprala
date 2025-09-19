@@ -3,6 +3,27 @@ import { Link } from 'react-router-dom'
 
 const CONTACTS = [
   {
+    officer: "Smt. Sakshi Sawhney",
+    designation: "Deputy Commissioner",
+    department: "Administration",
+    mobile: "81302-56305",
+    block: ""
+  },
+  {
+    officer: "Sh. Rohit Gupta",
+    designation: "Additional Deputy Commissioner (G)",
+    department: "Administration",
+    mobile: "98150-08658",
+    block: ""
+  },
+  {
+    officer: "Smt. Amandeep Kaur",
+    designation: "Additional Deputy Commissioner (Urban Development)",
+    department: "Administration",
+    mobile: "84376-66205",
+    block: ""
+  },
+  {
     officer: "SMT. PARAMJIT KAUR",
     designation: "ADC RURAL DEVELOPMENT",
     department: "Rural Development & Panchayats",
@@ -96,8 +117,8 @@ export default function ContactDetails() {
                   <tbody>
                     {CONTACTS.map((c, idx) => (
                       <tr key={idx} className="even:bg-white odd:bg-gray-50">
-                        <td className="px-3 py-3 text-sm font-medium text-gray-800">{c.officer}</td>
-                        <td className="px-3 py-3 text-sm text-gray-600">{c.designation}</td>
+                        <td className="px-3 py-3 text-sm font-medium text-gray-800">{c.officer.toUpperCase()}</td>
+                        <td className="px-3 py-3 text-sm text-gray-600">{c.designation.toUpperCase()}</td>
                         <td className="px-3 py-3 text-sm text-gray-600">{c.department}</td>
                         <td className="px-3 py-3 text-sm text-gray-600 whitespace-nowrap">
                           <a href={`tel:${c.mobile}`} className="text-emerald-600 hover:underline">{c.mobile}</a>

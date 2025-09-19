@@ -7,6 +7,10 @@ import Villages from './pages/Villages'
 import ContactDetails from './pages/ContactDetails'
 import NotFound from './pages/NotFound'
 import NGORequestForm from './pages/NGORequestForm'
+import RepairingHousesRequirements from './pages/RepairingHousesRequirements'
+import AHDRequirements from './pages/AHDRequirements'
+import SchoolStationaryRequirements from './pages/SchoolStationaryRequirements'
+import MedicalHelpRequirements from './pages/MedicalHelpRequirements'
 
 import AdminLayout from './pages/admin/AdminLayout'
 import AdminLogin from './pages/admin/Login'
@@ -22,6 +26,11 @@ export default function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Landing />} />
           <Route path="villages" element={<Villages />} />
+          <Route path="ContactDetails" element={<ContactDetails />} />
+          <Route path="/requirements/animal-husbandry" element={<AHDRequirements />} />
+          <Route path="/requirements/repair-houses" element={<RepairingHousesRequirements />} />
+          <Route path="/requirements/school-stationary" element={<SchoolStationaryRequirements />} />
+          <Route path="/requirements/medical-help" element={<MedicalHelpRequirements />} />
           <Route path="ContactDetails" element={<ContactDetails />} />
           <Route path="villages/:id" element={<VillageDetails />} />
           <Route path="ngos/adoptVillage" element={<NGORequestForm />} />
