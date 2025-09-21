@@ -16226,7 +16226,188 @@ async function markWorstAffectedStatic() {
   }
 }
 
+// --- add this to seed.js (paste near other upsert functions) ---
 
+/**
+ * Create static NgoVillage assignments from an in-code list.
+ * If NGO or Village is missing it will log and skip that row.
+ * It avoids duplicates by checking existing NgoVillage entries.
+ */
+async function upsertNgoVillagesStatic() {
+  // <-- put your static rows here: { ngoName, villageName, contactPerson?, designation?, contactPhone?, supportTypeKey?, scaleKey?, remarks?, service? }
+  const rows = [
+    { ngoName: 'Initiators of Change', service: 'School (Uniform, Stationery)', villageName: 'Malakpur' },
+{ ngoName: 'Initiators of Change', service: 'Medical (Gyane)', villageName: 'Daria musa' },
+{ ngoName: 'Initiators of Change', service: 'House Repair', villageName: 'Rurewal' },
+{ ngoName: 'Initiators of Change', service: 'Provide 20 Cattles', villageName: '' },
+{ ngoName: 'Guru Nanak Dev University', service: 'Cleaniness and Fogging Adoption of Village', villageName: 'Ghaggar' },
+{ ngoName: 'Phulkari', service: 'School (Uniform, Stationery)', villageName: 'Araya' },
+{ ngoName: 'Phulkari', service: 'Medicines', villageName: 'Araya' },
+{ ngoName: 'Voice of Amritsar', service: 'School (Uniform, Stationery)', villageName: 'Talwandi Rai Dado' },
+{ ngoName: 'Voice of Amritsar', service: 'School (Uniform, Stationery)', villageName: 'Kasowala' },
+{ ngoName: 'Voice of Amritsar', service: 'Medical (Sanitary Napkins)', villageName: 'Bouli' },
+{ ngoName: 'Kalghi Dhar Trust , Baru Sahib', service: 'Animal Husbandry (Tudi & Chara for 5 Villages) ', villageName: 'Motla' },
+{ ngoName: 'Kalghi Dhar Trust , Baru Sahib', service: 'Animal Husbandry (Tudi & Chara for 5 Villages) ', villageName: 'Dabar Basti' },
+{ ngoName: 'Kalghi Dhar Trust , Baru Sahib', service: 'Repair of House', villageName: 'Gagomahal' },
+{ ngoName: 'Kalghi Dhar Trust , Baru Sahib', service: 'Repair of House', villageName: 'Fattehwal Vadda' },
+{ ngoName: 'Kalghi Dhar Trust , Baru Sahib', service: 'Repair of House', villageName: 'Mehmad Mandranwala' },
+{ ngoName: 'Round Table Club', service: 'School (Uniform, Stationery)', villageName: 'Machhiwala' },
+{ ngoName: 'Rotary Club', service: 'Medical Camps', villageName: 'Ghumari' },
+{ ngoName: 'Sarbat Da Bhala', service: 'Animal Hubandry (60 Tons of chara & Animal Shed)', villageName: 'Nangal Sohal' },
+{ ngoName: 'Sarbat Da Bhala', service: 'Animal Hubandry (60 Tons of chara & Animal Shed)', villageName: 'Laalwala' },
+{ ngoName: 'Global Sikhs ', service: 'House Repair', villageName: 'Jatta' },
+{ ngoName: 'Global Sikhs ', service: 'Desilting (Tractors with Diesel)', villageName: 'Punga' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'House Repair', villageName: 'Sultan Mahal' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Desilting (Tractors with Diesel)', villageName: 'Sultan Mahal' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Medical (Pink Mobile Vans, Sanitary Napkins)', villageName: 'Sultan Mahal' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Awareness and organising teams for plastic pollution', villageName: 'Sultan Mahal' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'A team to assist insurance claims special helpline for legal assistance', villageName: 'Sultan Mahal' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'TDS checking of water and installing new water bores at common places like Gurudwara for drinking water', villageName: 'Sultan Mahal' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Providing bags and stationery to students', villageName: 'Sultan Mahal' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'House Repair', villageName: 'Arazi Saharan' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Desilting (Tractors with Diesel)', villageName: 'Arazi Saharan' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Medical (Pink Mobile Vans, Sanitary Napkins)', villageName: 'Arazi Saharan' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Awareness and organising teams for plastic pollution', villageName: 'Arazi Saharan' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'A team to assist insurance claims special helpline for legal assistance', villageName: 'Arazi Saharan' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'TDS checking of water and installing new water bores at common places like Gurudwara for drinking water', villageName: 'Arazi Saharan' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Providing bags and stationery to students', villageName: 'Arazi Saharan' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'House Repair', villageName: 'Mangu Naru' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Desilting (Tractors with Diesel)', villageName: 'Mangu Naru' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Medical (Pink Mobile Vans, Sanitary Napkins)', villageName: 'Mangu Naru' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Awareness and organising teams for plastic pollution', villageName: 'Mangu Naru' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'A team to assist insurance claims special helpline for legal assistance', villageName: 'Mangu Naru' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'TDS checking of water and installing new water bores at common places like Gurudwara for drinking water', villageName: 'Mangu Naru' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Providing bags and stationery to students', villageName: 'Mangu Naru' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'House Repair', villageName: 'Nissoke' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Desilting (Tractors with Diesel)', villageName: 'Nissoke' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Medical (Pink Mobile Vans, Sanitary Napkins)', villageName: 'Nissoke' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Awareness and organising teams for plastic pollution', villageName: 'Nissoke' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'A team to assist insurance claims special helpline for legal assistance', villageName: 'Nissoke' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'TDS checking of water and installing new water bores at common places like Gurudwara for drinking water', villageName: 'Nissokel' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Providing bags and stationery to students', villageName: 'Nissoke' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'House Repair', villageName: 'Kot  Rajada' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Desilting (Tractors with Diesel)', villageName: 'Kot  Rajada' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Medical (Pink Mobile Vans, Sanitary Napkins)', villageName: 'Kot  Rajada' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Awareness and organising teams for plastic pollution', villageName: 'Kot  Rajada' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'A team to assist insurance claims special helpline for legal assistance', villageName: 'Kot  Rajada' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'TDS checking of water and installing new water bores at common places like Gurudwara for drinking water', villageName: 'Kot  Rajada' },
+{ ngoName: 'APKF/ Khalsa Aid', service: 'Providing bags and stationery to students', villageName: 'Kot  Rajada' },
+{ ngoName: 'Uppal Group', service: 'School (Uniform, Stationery)', villageName: 'Pairewaal' },
+{ ngoName: 'Mata Kaulan Ji Bhalai Kendra', service: 'To provide Buffaloes', villageName: 'Pandori' },
+{ ngoName: 'Mata Kaulan Ji Bhalai Kendra', service: 'To provide Buffaloes', villageName: 'Chak Dogra' },
+{ ngoName: 'Mata Kaulan Ji Bhalai Kendra', service: 'To provide Buffaloes', villageName: 'Chaharpur' },
+{ ngoName: 'Reliance Foundation', service: 'Door -to -Door Veterinary Services', villageName: 'Passia' },
+{ ngoName: 'KVI - Mission Sahayog', service: 'School (Uniform, Stationery) Desilting with Tractors Diesel', villageName: 'Rurewal' },
+{ ngoName: 'United Sikhs', service: 'Provison of Seeds Desilting (Tractors with Diesel)', villageName: 'Bedi Channa' },
+{ ngoName: 'United Sikhs', service: 'Provison of Seeds Desilting (Tractors with Diesel)', villageName: 'Panj Garai Wahla' },
+{ ngoName: 'United Sikhs', service: 'Provison of Seeds Desilting (Tractors with Diesel)', villageName: 'Arazikot Rajada' },
+{ ngoName: 'Shaheed Kartar Singh Sarabha Ji Org.', service: 'Medical (Medical Team 2000 Doctors & Consultations)', villageName: 'Kot Rajada' },
+{ ngoName: 'Shaheed Kartar Singh Sarabha Ji Org.', service: 'Veterinary Doctor Teams', villageName: 'Ghumari' },
+{ ngoName: 'Sun Foundation', service: 'Desilting (Tractors with Diesel)', villageName: 'Araji Saharan' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Mehmad Mendrawala' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Chaharpur' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'kot Rajada' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Arajikot Rajada' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Panj Garai Wahla' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Ghumari' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Machhiwala' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Nangal Sohal' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Rurewal' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Mangu Naru' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Shehzada' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Fattehwal Chotta' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Malakpur' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'kasowala' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Darria Musa' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Ghonewala' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Saharan' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Budha Barsal' },
+{ ngoName: 'Sun Foundation', service: 'Vocational labour (SHGs), Disribution of Relief Material ', villageName: 'Kamalpura khurd' },
+{ ngoName: 'YGPT', service: 'Adoption Of Villages', villageName: 'Kot Rajada' },
+{ ngoName: 'YGPT', service: 'Adoption Of Villages', villageName: 'Ghumrai' },
+{ ngoName: 'Prerna Social Development', service: 'Seed Farms, Diesel, Manures, Fee Help, Cattles Buy, Repair Work, Fogging Machines  ', villageName: 'Nepal ' },
+{ ngoName: 'Prerna Social Development', service: 'Seed Farms, Diesel, Manures, Fee Help, Cattles Buy, Repair Work, Fogging Machines  ', villageName: 'Gharial ' },
+{ ngoName: 'Prerna Social Development', service: 'Seed Farms, Diesel, Manures, Fee Help, Cattles Buy, Repair Work, Fogging Machines  ', villageName: 'Jassadwal ' }
+  ];
+
+  console.log(`upsertNgoVillagesStatic: processing ${rows.length} static assignments.`);
+
+  let created = 0;
+  let skipped = 0;
+
+  for (const [idx, r] of rows.entries()) {
+    const ngoName = (r.ngoName || '').trim();
+    const villageName = (r.villageName || '').trim();
+
+    if (!ngoName || !villageName) {
+      console.warn(`Row ${idx + 1}: missing ngoName or villageName; skipping.`);
+      skipped++;
+      continue;
+    }
+
+    try {
+      const ngo = await prisma.nGO.findUnique({ where: { name: ngoName } });
+      const village = await prisma.village.findUnique({ where: { name: villageName } });
+
+      if (!ngo) {
+        console.warn(`Row ${idx + 1}: NGO "${ngoName}" not found — skipping.`);
+        skipped++;
+        continue;
+      }
+      if (!village) {
+        console.warn(`Row ${idx + 1}: Village "${villageName}" not found — skipping.`);
+        skipped++;
+        continue;
+      }
+
+      // avoid duplicates
+      const exists = await prisma.ngoVillage.findFirst({
+        where: { ngoId: ngo.id, villageId: village.id }
+      });
+      if (exists) {
+        console.log(`Row ${idx + 1}: NgoVillage already exists for NGO="${ngoName}" & Village="${villageName}" — skipping.`);
+        skipped++;
+        continue;
+      }
+
+      // optional: resolve supportType/scale if keys provided
+      let supportTypeId = null;
+      if (r.supportTypeKey) {
+        const st = await prisma.supportType.findUnique({ where: { key: r.supportTypeKey } });
+        if (st) supportTypeId = st.id;
+      }
+      let scaleId = null;
+      if (r.scaleKey) {
+        const sc = await prisma.scale.findUnique({ where: { key: r.scaleKey } });
+        if (sc) scaleId = sc.id;
+      }
+
+      // create
+      await prisma.ngoVillage.create({
+        data: {
+          ngoId: ngo.id,
+          villageId: village.id,
+          contactPerson: r.contactPerson ?? null,
+          designation: r.designation ?? null,
+          contactPhone: r.contactPhone ?? null,
+          supportTypeId: supportTypeId,
+          scaleId: scaleId,
+          remarks: r.remarks ?? null,
+          service: r.service ?? null,
+          // requestId intentionally omitted unless you want to link to an NGORequest
+        }
+      });
+
+      console.log(`Row ${idx + 1}: created NgoVillage: NGO="${ngoName}" <-> Village="${villageName}"`);
+      created++;
+    } catch (err) {
+      console.error(`Row ${idx + 1}: error creating NgoVillage for "${ngoName}" / "${villageName}":`, err.message || err);
+      skipped++;
+    }
+  }
+
+  console.log(`upsertNgoVillagesStatic: done. created=${created}, skipped=${skipped}`);
+}
 
 const bcrypt = require('bcrypt')
 
@@ -16253,6 +16434,7 @@ async function main() {
     await upsertAdmin()
     await upsertHouseDamageRequirements()
     await upsertSchoolStationeryRequirement()
+    await upsertNgoVillagesStatic()
     console.log('Seeding complete')
   } catch (err) {
     console.error('Seed error', err)

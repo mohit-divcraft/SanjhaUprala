@@ -122,6 +122,7 @@ model NgoVillage {
   scale         Scale?       @relation(fields: [scaleId], references: [id])
   scaleId       String?
   remarks       String?
+  service       String?
 
   /// optional: link back to the request that caused this assignment
   request   NGORequest? @relation(fields: [requestId], references: [id])

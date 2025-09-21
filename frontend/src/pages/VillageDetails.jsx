@@ -102,7 +102,7 @@ export default function VillageDetails(){
                       <h4 className="text-lg font-semibold">{ngoName}</h4>
                       <div className="text-sm text-gray-600">{ngoType}</div>
                     </div>
-                    <div className="text-sm text-gray-500">{created}</div>
+                    <div className="text-sm text-gray-500"></div>
                   </div>
 
                   <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
@@ -111,11 +111,15 @@ export default function VillageDetails(){
                       <div className="mt-1"><strong>{contact}</strong> {designation !== '—' && <span className="text-gray-600">— {designation}</span>}</div>
                       <div className="text-gray-600 mt-1">{phone}</div>
                     </div>
-
-                    <div>
-                      <div className="text-xs text-gray-500">Support & scale</div>
+{supportLabel=='-'?
+                    (<div>
+                      <div className="text-xs text-gray-500">Support</div>
                       <div className="mt-1"><strong>{supportLabel}</strong></div>
-                      <div className="text-gray-600 mt-1">{scaleLabel}</div>
+                    </div>)
+            :''}
+                    <div>
+                      <div className="text-xs text-gray-500">Service</div>
+                      <div className="mt-1"><strong>{a.service}</strong></div>
                     </div>
                   </div>
 

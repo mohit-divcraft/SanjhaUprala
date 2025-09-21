@@ -14,7 +14,7 @@ app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.get('/api/villages', async (req, res) => {
   try {
     const villages = await prisma.village.findMany({
-      include: { contacts: true }
+      include: { contacts: true,ngoVillages:true }
     })
     res.json(villages);
   } catch (err) {
