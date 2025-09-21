@@ -16361,15 +16361,7 @@ async function upsertNgoVillagesStatic() {
       }
 
       // avoid duplicates
-      const exists = await prisma.ngoVillage.findFirst({
-        where: { ngoId: ngo.id, villageId: village.id }
-      });
-      if (exists) {
-        console.log(`Row ${idx + 1}: NgoVillage already exists for NGO="${ngoName}" & Village="${villageName}" — skipping.`);
-        skipped++;
-        continue;
-      }
-
+     
       // optional: resolve supportType/scale if keys provided
       let supportTypeId = null;
       if (r.supportTypeKey) {
