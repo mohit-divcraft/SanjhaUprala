@@ -16390,7 +16390,7 @@ async function upsertNgoVillagesStatic() {
         }
       });
 
-      console.log(`Row ${idx + 1}: created NgoVillage: NGO="${ngoName}" <-> Village="${villageName}"`);
+      //console.log(`Row ${idx + 1}: created NgoVillage: NGO="${ngoName}" <-> Village="${villageName}"`);
       created++;
     } catch (err) {
       console.error(`Row ${idx + 1}: error creating NgoVillage for "${ngoName}" / "${villageName}":`, err.message || err);
