@@ -4,6 +4,7 @@ import Layout from './components/Layout'
 import Landing from './pages/Landing'
 import VillageDetails from './pages/VillageDetails'
 import Villages from './pages/Villages'
+import EventsGallery from './pages/EventsGallery'
 import ContactDetails from './pages/ContactDetails'
 import NotFound from './pages/NotFound'
 import NGORequestForm from './pages/NGORequestForm'
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Landing />} />
           <Route path="villages" element={<Villages />} />
+          <Route path="EventsGallery" element={<EventsGallery />} />
           <Route path="ContactDetails" element={<ContactDetails />} />
           <Route path="/requirements/animal-husbandry" element={<AHDRequirements />} />
           <Route path="/requirements/repair-houses" element={<RepairingHousesRequirements />} />

@@ -16415,6 +16415,149 @@ async function upsertAdmin() {
   })
 }
 
+async function upsertEventsSimple() {
+  const sampleEvents = [
+    {
+      title: 'Bibi Kaulan Bhalai Ji Trust Donates Cow to Flood-Affected Family',
+      description: `Bibi Kaulan bhalai ji trust helped under sanjha uprala to give a cow to a family who had lost all their milch animals - we are grateful`,
+      date: new Date('2025-09-14'),
+      location: 'Flood Effected Areas',
+      images: [
+        { src: '/media/events/1.jpeg', thumb: '/media/events/1.jpeg', caption: '', order: 0 },
+        { src: '/media/events/2.jpeg', thumb: '/media/events/2.jpeg', caption: '', order: 0 },
+        { src: '/media/events/3.jpeg', thumb: '/media/events/3.jpeg', caption: '', order: 0 },
+        { src: '/media/events/4.jpeg', thumb: '/media/events/4.jpeg', caption: '', order: 0 }
+      ]
+    },
+    {
+      title: 'Baru Sahib Kalgidhar Trust Volunteers Repair Household Equipment',
+      description: `We are thankful to Baru Sahib kalgidhar trust who has been sending daily team of volunteers to fix household equipments in the flood affected areas`,
+      date: new Date('2025-09-15'),
+      location: 'Flood Effected Areas',
+      images: [
+         { src: '/media/events/5.jpeg', thumb: '/media/events/5.jpeg', caption: '', order: 0 },
+        { src: '/media/events/6.jpeg', thumb: '/media/events/6.jpeg', caption: '', order: 0 }
+      ]
+    },
+    {
+      title: 'Ms. Arushi’s Ward Builds Group Housing for Flood-Hit Families',
+      description: `We are grateful to Ms Arushi whose ward has prepared this group housing for homeless which will be used at Ramdas block`,
+      date: new Date('2025-09-16'),
+      location: 'Flood Effected Areas',
+      images: [
+        { src: '/media/events/38.jpeg', thumb: '/media/events/38.jpeg', caption: '', order: 0 },
+         { src: '/media/events/42.jpeg', thumb: '/media/events/42.jpeg', caption: '', order: 0 },
+         { src: '/media/events/45.jpeg', thumb: '/media/events/45.jpeg', caption: '', order: 0 }
+      ]
+    },
+    {
+      title: 'Voice of Amritsar reaching out with aid',
+      description: `Voice of Amritsar reaching out to flood affected areas with aid.`,
+      date: new Date('2025-09-16'),
+      location: 'Flood Effected Areas',
+      images: [
+         { src: '/media/events/7.jpeg', thumb: '/media/events/7.jpeg', caption: '', order: 0 }
+      ]
+    },
+    {
+      title: 'Sun Foundation Launches Housing Reconstruction and Mega Desilting in Ajnala',
+      description: `Sun foundation starting building damaged houses village wise under guidance of SDM Sh Arora plus Mega start of Desilting with 5 jcbs & 20 tractors in ajnala on Sunday morning #sanjhauprala`,
+      date: new Date('2025-09-16'),
+      location: 'Flood Effected Areas',
+      images: [
+         { src: '/media/events/37.jpeg', thumb: '/media/events/37.jpeg', caption: '', order: 0 },
+         { src: '/media/events/40.jpeg', thumb: '/media/events/40.jpeg', caption: '', order: 0 },
+         { src: '/media/events/41.jpeg', thumb: '/media/events/41.jpeg', caption: '', order: 0 },
+         { src: '/media/events/44.jpeg', thumb: '/media/events/44.jpeg', caption: '', order: 0 },
+         { src: '/media/events/47.jpeg', thumb: '/media/events/47.jpeg', caption: '', order: 0 }
+      ]
+    },
+    {
+      title: 'Cleanliness Drive by Nirankari Mission and Red Cross',
+      description: `Cleanliness Drive by Nirankari Mission and Red Cross under Distt. Administration.`,
+      date: new Date('2025-09-16'),
+      location: 'Flood Effected Areas',
+      images: [
+         { src: '/media/events/31.jpeg', thumb: '/media/events/31.jpeg', caption: '', order: 0 },
+           { src: '/media/events/32.jpeg', thumb: '/media/events/32.jpeg', caption: '', order: 0 },
+             { src: '/media/events/33.jpeg', thumb: '/media/events/33.jpeg', caption: '', order: 0 },
+               { src: '/media/events/34.jpeg', thumb: '/media/events/34.jpeg', caption: '', order: 0 },
+                 { src: '/media/events/35.jpeg', thumb: '/media/events/35.jpeg', caption: '', order: 0 },
+                   { src: '/media/events/36.jpeg', thumb: '/media/events/36.jpeg', caption: '', order: 0 }
+      ]
+    },
+    {
+      title: 'Flood rehabilitation and desilting work Launched at Ajnala',
+      description: `In a significant step towards flood relief and rehabilitation, Padma Shri Dr. Vikramjit Singh Sahney, Member of Parliament (Rajya Sabha) and Chairman Sun Foundation launched large-scale flood rehabilitation and desilting operations in Block Ajnala of Amritsar District on Sunday.
+
+As part of the operations, 15 tractors and 5 JCB machines were deployed for desilting work in village Nangal Sohal and Mehmat Mandira Wali and adjoining areas.
+
+After offering Ardas at the site, Dr. Sahney highlighted that nearly 40,000 hectares of crops have been damaged in Ajnala  by up to eight feet of waterlogging, leaving poor farmers in urgent need of support to clear sand and prepare fields for wheat sowing.`,
+      date: new Date('2025-09-16'),
+      location: 'Flood Effected Areas',
+      images: [
+         { src: '/media/events/46.jpeg', thumb: '/media/events/46.jpeg', caption: '', order: 0 },
+         { src: '/media/events/48.jpeg', thumb: '/media/events/48.jpeg', caption: '', order: 0 },
+         { src: '/media/events/39.jpeg', thumb: '/media/events/39.jpeg', caption: '', order: 0 },
+          { src: '/media/events/43.jpeg', thumb: '/media/events/43.jpeg', caption: '', order: 0 }
+      ]
+    }
+  ];
+
+  for (const ev of sampleEvents) {
+    // try to find existing event by title (title is not required to be unique in schema,
+    // so this uses findFirst; if you want a strict unique constraint, we can add it).
+    const existing = await prisma.Event.findFirst({ where: { title: ev.title }});
+
+    if (existing) {
+      // update event fields
+      await prisma.Event.update({
+        where: { id: existing.id },
+        data: {
+          description: ev.description,
+          date: ev.date,
+          location: ev.location,
+          updatedAt: new Date(),
+        }
+      });
+
+      // remove existing images (simple approach) and re-create fresh ones
+      await prisma.EventImage.deleteMany({ where: { eventId: existing.id }});
+      for (const img of ev.images) {
+        await prisma.EventImage.create({
+          data: {
+            eventId: existing.id,
+            src: img.src,
+            thumb: img.thumb,
+            caption: img.caption,
+            order: img.order ?? 0
+          }
+        });
+      }
+      console.log('Updated event:', ev.title);
+    } else {
+      // create event with images
+      const created = await prisma.Event.create({
+        data: {
+          title: ev.title,
+          description: ev.description,
+          date: ev.date,
+          location: ev.location,
+          images: {
+            create: ev.images.map(img => ({
+              src: img.src,
+              thumb: img.thumb,
+              caption: img.caption,
+              order: img.order ?? 0
+            }))
+          }
+        }
+      });
+      console.log('Created event:', created.title);
+    }
+  }
+}
+
 async function main() {
   try {
     await upsertSupportTypes()
@@ -16427,6 +16570,7 @@ async function main() {
     await upsertHouseDamageRequirements()
     await upsertSchoolStationeryRequirement()
     await upsertNgoVillagesStatic()
+    await upsertEventsSimple()
     console.log('Seeding complete')
   } catch (err) {
     console.error('Seed error', err)

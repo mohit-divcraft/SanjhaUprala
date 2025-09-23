@@ -161,3 +161,26 @@ model SchoolStationeryRequirement {
 
   @@index([blockName])
 }
+
+model Event {
+  id          String       @id @default(cuid())
+  title       String
+  description String?      @db.Text
+  date        DateTime?
+  location    String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  images      EventImage[]
+}
+
+model EventImage {
+  id        String   @id @default(cuid())
+  event     Event    @relation(fields: [eventId], references: [id])
+  eventId   String
+  src       String   // path or URL for full-size image
+  thumb     String?  // optional thumbnail path/URL
+  caption   String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}

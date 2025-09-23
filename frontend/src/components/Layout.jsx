@@ -75,6 +75,7 @@ export default function Layout() {
             <Link to="/" className="hover:text-yellow-300">Home</Link>
             <Link to="/ContactDetails" className="hover:text-yellow-300">Contact</Link>
             <Link to="/villages" className="hover:text-yellow-300">Villages</Link>
+            <Link to="/EventsGallery" className="hover:text-yellow-300">Gallery</Link>
 
             <RequirementsMenu />
 
@@ -123,7 +124,7 @@ export default function Layout() {
               <Link to="/" onClick={() => setMobileOpen(false)} className="block text-white/95 px-2 py-2 rounded hover:bg-white/10">Home</Link>
               <Link to="/ContactDetails" onClick={() => setMobileOpen(false)} className="block text-white/95 px-2 py-2 rounded hover:bg-white/10">Contact</Link>
               <Link to="/villages" onClick={() => setMobileOpen(false)} className="block text-white/95 px-2 py-2 rounded hover:bg-white/10">Villages</Link>
-
+              <Link to="/EventsGallery" onClick={() => setMobileOpen(false)} className="block text-white/95 px-2 py-2 rounded hover:bg-white/10">Gallery</Link>
               {/* Mobile Requirements accordion */}
               <div>
                 <button

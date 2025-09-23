@@ -8,6 +8,40 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const multer = require('multer');
+
+const path = require('path');
+const fs = require('fs');
+
+// ensure public/media and events folders exist (creates them if missing)
+const mediaRoot = path.join(__dirname, 'public', 'media');
+const eventsFolder = path.join(mediaRoot, 'events');
+if (!fs.existsSync(mediaRoot)) fs.mkdirSync(mediaRoot, { recursive: true });
+if (!fs.existsSync(eventsFolder)) fs.mkdirSync(eventsFolder, { recursive: true });
+
+console.log(mediaRoot);
+
+// serve /media -> ./public/media
+app.use('/media', express.static(mediaRoot));
+
+// optional temporary logger to confirm requests to /media (remove after debug)
+app.use((req, res, next) => {
+  if (req.path.startsWith('/media')) console.log('MEDIA REQ:', req.method, req.path);
+  next();
+});
+
+// multer storage -> save to ./public/media/events/<timestamp>-<origname>
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, 'public', 'media', 'events'));
+  },
+  filename: (req, file, cb) => {
+    const safe = Date.now() + '-' + file.originalname.replace(/\s+/g,'-');
+    cb(null, safe);
+  }
+});
+const upload = multer({ storage });
+
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 
 // villages route (basic)
@@ -318,7 +352,122 @@ app.get('/api/schoolStationeryRequirements', async (req, res) => {
   }
 })
 
+// GET /api/events  -> list all events with images
+app.get('/api/events', async (req, res) => {
+  try {
+    const events = await prisma.event.findMany({
+      orderBy: { date: 'desc' },
+      include: { images: { orderBy: { order: 'asc' } } }
+    });
+    res.json(events);
+  } catch (err) {
+    console.error('GET /api/events', err);
+    res.status(500).json({ error: 'internal' });
+  }
+});
 
+// GET /api/events/:id -> single event with images
+app.get('/api/events/:id', async (req, res) => {
+  try {
+    const ev = await prisma.event.findUnique({
+      where: { id: req.params.id },
+      include: { images: { orderBy: { order: 'asc' } } }
+    });
+    if (!ev) return res.status(404).json({ error: 'not found' });
+    res.json(ev);
+  } catch (err) {
+    console.error('GET /api/events/:id', err);
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// POST /api/admin/events      -> create event (admin)
+app.post('/api/admin/events', requireAdmin, async (req, res) => {
+  try {
+    const { title, description, date, location, images } = req.body;
+    const created = await prisma.event.create({
+      data: {
+        title,
+        description,
+        date: date ? new Date(date) : null,
+        location,
+        images: images && images.length ? { create: images.map((im, idx) => ({
+          src: im.src, thumb: im.thumb ?? im.src, caption: im.caption, order: im.order ?? idx
+        })) } : undefined
+      },
+      include: { images: true }
+    });
+    res.status(201).json(created);
+  } catch (err) {
+    console.error('POST /api/admin/events', err);
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// PUT /api/admin/events/:id   -> update event (admin)
+app.put('/api/admin/events/:id', requireAdmin, async (req, res) => {
+  try {
+    const { title, description, date, location, images } = req.body;
+    // simple approach: update basic fields, replace images if provided
+    const updateData = {
+      title,
+      description,
+      date: date ? new Date(date) : null,
+      location,
+      updatedAt: new Date()
+    };
+
+    const updated = await prisma.event.update({
+      where: { id: req.params.id },
+      data: updateData
+    });
+
+    if (Array.isArray(images)) {
+      // remove previous images and recreate (predictable)
+      await prisma.eventImage.deleteMany({ where: { eventId: req.params.id }});
+      for (let i = 0; i < images.length; i++) {
+        const im = images[i];
+        await prisma.eventImage.create({
+          data: { eventId: req.params.id, src: im.src, thumb: im.thumb ?? im.src, caption: im.caption, order: im.order ?? i }
+        });
+      }
+    }
+
+    const result = await prisma.event.findUnique({ where: { id: req.params.id }, include: { images: { orderBy: { order: 'asc' } } } });
+    res.json(result);
+  } catch (err) {
+    console.error('PUT /api/admin/events/:id', err);
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// DELETE /api/admin/events/:id -> delete event (admin)
+app.delete('/api/admin/events/:id', requireAdmin, async (req, res) => {
+  try {
+    // optionally delete images (DB rows); not removing files from disk here
+    await prisma.eventImage.deleteMany({ where: { eventId: req.params.id }});
+    await prisma.event.delete({ where: { id: req.params.id }});
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('DELETE /api/admin/events/:id', err);
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// POST /api/admin/events/upload-image  (multipart form-data) -> returns { src, thumb }
+// field name: 'image'
+app.post('/api/admin/events/upload-image', requireAdmin, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'no file' });
+    // file saved to public/media/events/<filename>
+    const relPath = `/media/events/${req.file.filename}`; // served by express.static above
+    // If you want, create a thumbnail here (sharp) and save path as thumb. For now set thumb = relPath
+    res.json({ src: relPath, thumb: relPath });
+  } catch (err) {
+    console.error('POST /api/admin/events/upload-image', err);
+    res.status(500).json({ error: 'internal' });
+  }
+});
 
 
 const port = process.env.PORT || 4000;
