@@ -5,21 +5,21 @@ const CONTACTS = [
   {
     officer: "Smt. Sakshi Sawhney",
     designation: "Deputy Commissioner",
-    department: "Administration",
+    department: "Revenue",
     mobile: "81302-56305",
     block: ""
   },
   {
     officer: "Sh. Rohit Gupta",
     designation: "Additional Deputy Commissioner (G)",
-    department: "Administration",
+    department: "Revenue",
     mobile: "98150-08658",
     block: ""
   },
   {
     officer: "Smt. Amandeep Kaur",
     designation: "Additional Deputy Commissioner (Urban Development)",
-    department: "Administration",
+    department: "Local Government",
     mobile: "84376-66205",
     block: ""
   },
