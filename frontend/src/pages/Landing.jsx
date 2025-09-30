@@ -127,7 +127,7 @@ function VillageRow({ v }) {
       </td>
 
       <td className="px-4 py-4 text-center">
-        <div className="text-sm font-medium text-gray-800">{v.ngoVillages?.length ?? 0}</div>
+        <div className="text-sm font-medium text-gray-800">{new Set(v.ngoVillages?.map(nv => nv.ngoId)).size}</div>
         <div className="text-xs text-gray-500">NGO(s)</div>
       </td>
 
@@ -159,7 +159,12 @@ export default function Landing() {
         return r.json()
       })
       .then(data => {
-        setVillages(data || [])
+        const sorted = (data || []).sort((a, b) => {
+          const countA = new Set((a.ngoVillages || []).map(v => v.ngoId)).size
+          const countB = new Set((b.ngoVillages || []).map(v => v.ngoId)).size
+          return countB - countA // descending
+        })
+        setVillages(sorted || [])
         setLoading(false)
       })
       .catch(err => {
@@ -212,18 +217,18 @@ export default function Landing() {
               >
                 All
               </button>
-              <button
+              {/* <button
                 onClick={() => setActiveTab('MOST')}
                 className={`px-3 py-1 rounded ${activeTab === 'MOST' ? 'bg-amber-600 text-white' : 'bg-white text-gray-700 ring-1 ring-gray-200'}`}
               >
                 Worst Affected
-              </button>
-              <button
+              </button> */}
+              {/* <button
                 onClick={() => setActiveTab('NEEDS')}
                 className={`px-3 py-1 rounded ${activeTab === 'NEEDS' ? 'bg-yellow-600 text-white' : 'bg-white text-gray-700 ring-1 ring-gray-200'}`}
               >
                 Needs Help
-              </button>
+              </button> */}
               <button
                 onClick={() => setActiveTab('UNTOUCHED')}
                 className={`px-3 py-1 rounded ${activeTab === 'UNTOUCHED' ? 'bg-slate-700 text-white' : 'bg-white text-gray-700 ring-1 ring-gray-200'}`}
