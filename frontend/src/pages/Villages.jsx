@@ -6,10 +6,9 @@ function VillageCard({ v }){
   const patwari = v.contacts?.find(c => c.role === 'PATWARI')
   return (
     <Link to={`/villages/${v.id}`} className="block p-4 rounded-lg shadow-sm bg-white hover:shadow-md transition">
-      <div className="h-36 bg-gray-100 rounded-md mb-3 flex items-center justify-center text-gray-400">
-        {/* placeholder image area */}
+      {/* <div className="h-36 bg-gray-100 rounded-md mb-3 flex items-center justify-center text-gray-400">
         <span className="uppercase text-sm">{v.name}</span>
-      </div>
+      </div> */}
       <h3 className="text-lg font-semibold">{v.name}</h3>
       {/* <p className="text-sm text-gray-500 mt-1">{v.district ?? '—'}</p>
       <div className="mt-3 text-sm text-gray-600">
