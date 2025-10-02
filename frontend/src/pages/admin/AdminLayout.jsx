@@ -18,6 +18,12 @@ export default function AdminLayout() {
           <div className="font-bold">SANJHA UPRALA — Admin</div>
           <div className="flex items-center gap-3">
             <button
+              onClick={() => navigate('/admin/home')}
+              className="px-3 py-1 rounded bg-gray-700/60 hover:bg-gray-700"
+            >
+              Home
+            </button>
+            <button
               onClick={() => navigate('/')}
               className="px-3 py-1 rounded bg-gray-700/60 hover:bg-gray-700"
             >

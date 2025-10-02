@@ -44,31 +44,6 @@ const upload = multer({ storage });
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 
-// villages route (basic)
-app.get('/api/villages', async (req, res) => {
-  try {
-    const villages = await prisma.village.findMany({
-      include: { contacts: true,ngoVillages:true }
-    })
-    res.json(villages);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'internal' });
-  }
-});
-
-// create village (for admin/dev)
-app.post('/api/villages', async (req, res) => {
-  try {
-    const data = req.body;
-    const v = await prisma.village.create({ data });
-    res.json(v);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'internal' });
-  }
-});
-
 // GET support types
 app.get('/api/support-types', async (req, res) => {
   try {
@@ -90,6 +65,78 @@ app.get('/api/scales', async (req, res) => {
     res.status(500).json({ error: 'internal' })
   }
 })
+
+// -----------------------------
+// NGOs (public + admin)
+// -----------------------------
+
+// GET /api/ngos/:id -> single NGO
+app.get('/api/ngos/:id', async (req, res) => {
+  try {
+    const row = await prisma.nGO.findUnique({ where: { id: req.params.id } });
+    if (!row) return res.status(404).json({ error: 'not found' });
+    res.json(row);
+  } catch (err) {
+    console.error('GET /api/ngos/:id', err);
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// POST /api/admin/ngos -> create NGO
+app.post('/api/admin/ngos', requireAdmin, async (req, res) => {
+  try {
+    const { name, type } = req.body;
+    if (!name) return res.status(400).json({ error: 'name is required' });
+
+    const created = await prisma.nGO.create({
+      data: {
+        name,
+        type: type ?? null,
+      },
+    });
+    res.status(201).json(created);
+  } catch (err) {
+    console.error('POST /api/admin/ngos', err);
+    if (err.code === 'P2002') {
+      // unique constraint on name
+      return res.status(409).json({ error: 'ngo name already exists' });
+    }
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// PUT /api/admin/ngos/:id -> update NGO
+app.put('/api/admin/ngos/:id', requireAdmin, async (req, res) => {
+  try {
+    const { name, type } = req.body;
+    const updated = await prisma.nGO.update({
+      where: { id: req.params.id },
+      data: {
+        ...(name !== undefined ? { name } : {}),
+        ...(type !== undefined ? { type: type ?? null } : {}),
+      },
+    });
+    res.json(updated);
+  } catch (err) {
+    console.error('PUT /api/admin/ngos/:id', err);
+    if (err.code === 'P2002') return res.status(409).json({ error: 'ngo name already exists' });
+    if (err.code === 'P2025') return res.status(404).json({ error: 'not found' });
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// DELETE /api/admin/ngos/:id -> delete NGO
+app.delete('/api/admin/ngos/:id', requireAdmin, async (req, res) => {
+  try {
+    await prisma.nGO.delete({ where: { id: req.params.id } });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('DELETE /api/admin/ngos/:id', err);
+    if (err.code === 'P2025') return res.status(404).json({ error: 'not found' });
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
 
 // GET NGOs
 app.get('/api/ngos', async (req, res) => {
@@ -469,6 +516,261 @@ app.post('/api/admin/events/upload-image', requireAdmin, upload.single('image'),
   }
 });
 
+// -----------------------------
+// VILLAGES CRUD
+// -----------------------------
+
+// GET /api/villages  -> list all villages (optional search by ?q=)
+app.get('/api/villages', async (req, res) => {
+  try {
+    const { q } = req.query;
+    const villages = await prisma.village.findMany({
+      where: q
+        ? {
+            OR: [
+              { name: { contains: q, mode: 'insensitive' } },
+              { district: { contains: q, mode: 'insensitive' } },
+              { description: { contains: q, mode: 'insensitive' } }
+            ]
+          }
+        : undefined,
+      include: { contacts: true, ngoVillages: true },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(villages);
+  } catch (err) {
+    console.error('GET /api/villages', err);
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// GET /api/villages/:id -> single village (with contacts + ngoVillages)
+app.get('/api/villages/:id', async (req, res) => {
+  try {
+    const row = await prisma.village.findUnique({
+      where: { id: req.params.id },
+      include: { contacts: true, ngoVillages: true }
+    });
+    if (!row) return res.status(404).json({ error: 'not found' });
+    res.json(row);
+  } catch (err) {
+    console.error('GET /api/villages/:id', err);
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// POST /api/villages -> create village
+app.post('/api/villages', async (req, res) => {
+  try {
+    const { name, district, description, mostEffected, needsHelp } = req.body;
+    if (!name) return res.status(400).json({ error: 'name is required' });
+
+    const created = await prisma.village.create({
+      data: {
+        name,
+        district: district ?? null,
+        description: description ?? null,
+        mostEffected: !!mostEffected,
+        needsHelp: !!needsHelp
+      }
+    });
+    res.status(201).json(created);
+  } catch (err) {
+    console.error('POST /api/villages', err);
+    if (err.code === 'P2002') {
+      // unique constraint on name
+      return res.status(409).json({ error: 'village name already exists' });
+    }
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// PUT /api/villages/:id -> update village
+app.put('/api/villages/:id', async (req, res) => {
+  try {
+    const { name, district, description, mostEffected, needsHelp } = req.body;
+    const updated = await prisma.village.update({
+      where: { id: req.params.id },
+      data: {
+        // only set fields if provided; otherwise leave as-is
+        ...(name !== undefined ? { name } : {}),
+        ...(district !== undefined ? { district } : {}),
+        ...(description !== undefined ? { description } : {}),
+        ...(mostEffected !== undefined ? { mostEffected: !!mostEffected } : {}),
+        ...(needsHelp !== undefined ? { needsHelp: !!needsHelp } : {})
+      }
+    });
+    res.json(updated);
+  } catch (err) {
+    console.error('PUT /api/villages/:id', err);
+    if (err.code === 'P2002') {
+      return res.status(409).json({ error: 'village name already exists' });
+    }
+    if (err.code === 'P2025') {
+      return res.status(404).json({ error: 'not found' });
+    }
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// DELETE /api/villages/:id -> delete village
+app.delete('/api/villages/:id', async (req, res) => {
+  try {
+    await prisma.village.delete({ where: { id: req.params.id } });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('DELETE /api/villages/:id', err);
+    if (err.code === 'P2025') return res.status(404).json({ error: 'not found' });
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// GET /api/villages/:id/contacts -> list contacts of a village
+app.get('/api/villages/:id/contacts', async (req, res) => {
+  try {
+    const contacts = await prisma.contact.findMany({
+      where: { villageId: req.params.id },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(contacts);
+  } catch (err) {
+    console.error('GET /api/villages/:id/contacts', err);
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// POST /api/villages/:id/contacts -> create contact under a village
+app.post('/api/villages/:id/contacts', async (req, res) => {
+  try {
+    const { name, phone, role } = req.body;
+    if (!name || !role) {
+      return res.status(400).json({ error: 'name and role are required' });
+    }
+    // will throw if villageId invalid
+    const created = await prisma.contact.create({
+      data: {
+        name,
+        phone: phone ?? null,
+        role, // must be one of ContactRole enum
+        villageId: req.params.id
+      }
+    });
+    res.status(201).json(created);
+  } catch (err) {
+    console.error('POST /api/villages/:id/contacts', err);
+    if (err.code === 'P2003') {
+      return res.status(400).json({ error: 'invalid villageId' });
+    }
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+
+// -----------------------------
+// CONTACTS CRUD
+// -----------------------------
+
+// GET /api/contacts -> list contacts (optional search by ?q= & ?role=)
+app.get('/api/contacts', async (req, res) => {
+  try {
+    const { q, role } = req.query;
+    const contacts = await prisma.contact.findMany({
+      where: {
+        AND: [
+          role ? { role: role } : {},
+          q
+            ? {
+                OR: [
+                  { name: { contains: q, mode: 'insensitive' } },
+                  { phone: { contains: q, mode: 'insensitive' } }
+                ]
+              }
+            : {}
+        ]
+      },
+      orderBy: { createdAt: 'desc' },
+      include: { village: true }
+    });
+    res.json(contacts);
+  } catch (err) {
+    console.error('GET /api/contacts', err);
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// GET /api/contacts/:id -> single contact
+app.get('/api/contacts/:id', async (req, res) => {
+  try {
+    const row = await prisma.contact.findUnique({
+      where: { id: req.params.id },
+      include: { village: true }
+    });
+    if (!row) return res.status(404).json({ error: 'not found' });
+    res.json(row);
+  } catch (err) {
+    console.error('GET /api/contacts/:id', err);
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// POST /api/contacts -> create contact (supply villageId)
+app.post('/api/contacts', async (req, res) => {
+  try {
+    const { name, phone, role, villageId } = req.body;
+    if (!name || !role || !villageId) {
+      return res.status(400).json({ error: 'name, role, villageId are required' });
+    }
+    const created = await prisma.contact.create({
+      data: {
+        name,
+        phone: phone ?? null,
+        role,
+        villageId
+      }
+    });
+    res.status(201).json(created);
+  } catch (err) {
+    console.error('POST /api/contacts', err);
+    if (err.code === 'P2003') {
+      return res.status(400).json({ error: 'invalid villageId' });
+    }
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// PUT /api/contacts/:id -> update contact
+app.put('/api/contacts/:id', async (req, res) => {
+  try {
+    const { name, phone, role, villageId } = req.body;
+    const updated = await prisma.contact.update({
+      where: { id: req.params.id },
+      data: {
+        ...(name !== undefined ? { name } : {}),
+        ...(phone !== undefined ? { phone } : {}),
+        ...(role !== undefined ? { role } : {}),
+        ...(villageId !== undefined ? { villageId } : {})
+      }
+    });
+    res.json(updated);
+  } catch (err) {
+    console.error('PUT /api/contacts/:id', err);
+    if (err.code === 'P2025') return res.status(404).json({ error: 'not found' });
+    if (err.code === 'P2003') return res.status(400).json({ error: 'invalid villageId' });
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+// DELETE /api/contacts/:id -> delete contact
+app.delete('/api/contacts/:id', async (req, res) => {
+  try {
+    await prisma.contact.delete({ where: { id: req.params.id } });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('DELETE /api/contacts/:id', err);
+    if (err.code === 'P2025') return res.status(404).json({ error: 'not found' });
+    res.status(500).json({ error: 'internal' });
+  }
+});
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => console.log(`SANJHA UPRALA backend listening on ${port}`));

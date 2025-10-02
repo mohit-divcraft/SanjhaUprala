@@ -8,7 +8,7 @@ export default function AdminLogin() {
   const navigate = useNavigate()
     useEffect(() => {
     const token = localStorage.getItem('adminToken')
-    if (token) navigate('/admin/requests', { replace: true })
+    if (token) navigate('/admin/home', { replace: true })
     }, [navigate])
 
   const handleSubmit = async (e) => {
@@ -23,7 +23,7 @@ export default function AdminLogin() {
       if (!res.ok) throw new Error("Login failed")
       const data = await res.json()
       localStorage.setItem("adminToken", data.token)
-      navigate("/admin/requests")
+      navigate("/admin/home")
     } catch (err) {
       setError("Invalid credentials")
     }

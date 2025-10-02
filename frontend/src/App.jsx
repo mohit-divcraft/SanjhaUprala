@@ -18,6 +18,10 @@ import AdminLogin from './pages/admin/Login'
 import AdminRequests from './pages/admin/Requests'
 import AdminRequestDetails from './pages/admin/AdminRequestDetails'
 import ProtectedRoute from './pages/admin/ProtectedRoute'
+import AdminVillages from './pages/admin/AdminVillages'
+import AdminHome from './pages/admin/AdminHome'
+import AdminEvents from './pages/admin/AdminEvents'
+import AdminNGOs from './pages/admin/AdminNGOs'
 
 export default function App() {
   return (
@@ -50,7 +54,11 @@ export default function App() {
               </ProtectedRoute>
             }
           >
+            <Route path="home" element={<AdminHome />} />
+            <Route path="ngos" element={<AdminNGOs />} />
+            <Route path="events" element={<AdminEvents />} />
             <Route path="requests" element={<AdminRequests />} />
+            <Route path="villages" element={<AdminVillages />} />
             <Route path="requests/:id" element={<AdminRequestDetails />} />
             {/* add other admin pages here */}
           </Route>
