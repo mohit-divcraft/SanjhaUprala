@@ -520,6 +520,41 @@ app.post('/api/admin/events/upload-image', requireAdmin, upload.single('image'),
 // VILLAGES CRUD
 // -----------------------------
 
+// GET /api/villages  -> list all villages (searchable) + contacts + ngoVillages(+ngo)
+app.get('/api/villages', async (req, res) => {
+  try {
+    const { q } = req.query;
+
+    const villages = await prisma.village.findMany({
+      where: q
+        ? {
+            OR: [
+              { name: { contains: q, mode: 'insensitive' } },
+              { district: { contains: q, mode: 'insensitive' } },
+              { description: { contains: q, mode: 'insensitive' } },
+            ],
+          }
+        : undefined,
+      include: {
+        contacts: true,
+        ngoVillages: {
+          include: {
+            ngo: true,                // ← include the NGO for each NgoVillage
+          },
+          orderBy: { createdAt: 'desc' }, // (optional) order the assignments
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    res.json(villages);
+  } catch (err) {
+    console.error('GET /api/villages', err);
+    res.status(500).json({ error: 'internal' });
+  }
+});
+
+
 // GET /api/villages  -> list all villages (optional search by ?q=)
 app.get('/api/villages', async (req, res) => {
   try {

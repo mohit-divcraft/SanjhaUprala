@@ -125,10 +125,13 @@ function VillageRow({ v }) {
       <td className="px-4 py-4">
         <ContactCell contacts={v.contacts} role="NUMBERDAR" />
       </td>
-
+    
       <td className="px-4 py-4 text-center">
-        <div className="text-sm font-medium text-gray-800">{new Set(v.ngoVillages?.map(nv => nv.ngoId)).size}</div>
-        <div className="text-xs text-gray-500">NGO(s)</div>
+        <div className="text-sm font-medium text-gray-800">
+          {[...new Set((v.ngoVillages || []).map(nv => nv?.ngo?.name).filter(Boolean))]
+            .sort((a,b) => a.localeCompare(b))
+            .join(', ') || '—'}
+        </div>
       </td>
 
       <td className="px-4 py-4">
@@ -148,6 +151,11 @@ export default function Landing() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState('ALL') // ALL | MOST | NEEDS | UNTOUCHED
+  // NGOs state
+  const [ngos, setNgos] = useState([])
+  const [ngosLoading, setNgosLoading] = useState(true)
+  const [ngosError, setNgosError] = useState(null)
+
 
   useEffect(() => {
     setLoading(true)
@@ -174,6 +182,27 @@ export default function Landing() {
       })
   }, [])
 
+  useEffect(() => {
+    setNgosLoading(true)
+    setNgosError(null)
+
+    fetch('/api/api/ngos')
+      .then(r => {
+        if (!r.ok) throw new Error('Network response not ok')
+        return r.json()
+      })
+      .then(data => {
+        setNgos(Array.isArray(data) ? data : [])
+        setNgosLoading(false)
+      })
+      .catch(err => {
+        console.error(err)
+        setNgosError('Failed to load NGOs')
+        setNgosLoading(false)
+      })
+  }, [])
+
+
   const filtered = useMemo(() => {
     if (!villages) return []
     switch (activeTab) {
@@ -187,6 +216,27 @@ export default function Landing() {
         return villages
     }
   }, [villages, activeTab])
+
+  const adoptedCounts = useMemo(() => {
+    const map = new Map()
+    for (const v of villages || []) {
+      for (const nv of (v.ngoVillages || [])) {
+        const id = nv.ngoId
+        map.set(id, (map.get(id) || 0) + 1)
+      }
+    }
+    return map
+  }, [villages])
+
+  // Optional: sort NGOs by adopted villages (desc)
+  const ngosSorted = useMemo(() => {
+    return [...ngos].sort((a, b) => {
+      const ca = adoptedCounts.get(a.id) || 0
+      const cb = adoptedCounts.get(b.id) || 0
+      if (cb !== ca) return cb - ca
+      return a.name.localeCompare(b.name)
+    })
+  }, [ngos, adoptedCounts])
 
   return (
     <div className="pb-12">
@@ -278,10 +328,50 @@ export default function Landing() {
           )}
         </div>
 
+         <section className="mt-10">
+          <h3 className="text-xl font-bold text-gray-800 mb-3">Participating NGOs</h3>
+
+          <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+            {ngosLoading ? (
+              <div className="p-6 text-center text-gray-500">Loading NGOs…</div>
+            ) : ngosError ? (
+              <div className="p-6 text-center text-red-600">{ngosError}</div>
+            ) : ngosSorted.length === 0 ? (
+              <div className="p-6 text-center text-gray-600">No NGOs found.</div>
+            ) : (
+               <div className="overflow-x-auto">
+              <div className="max-h-[500px] overflow-y-auto">
+              <table className="min-w-full table-fixed">
+                <thead className="sticky top-0 bg-gray-50 z-10">
+                  <tr>
+                    <th className="px-3 py-3 text-left text-xs text-gray-600 w-1/3">NGO</th>
+                    <th className="px-3 py-3 text-left text-xs text-gray-600 w-1/3">Type</th>
+                    <th className="px-3 py-3 text-left text-xs text-gray-600 w-1/6">Villages Adopted</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ngosSorted.map(ngo => (
+                    <tr key={ngo.id} className="even:bg-white odd:bg-gray-50">
+                      <td className="px-3 py-3 text-sm font-medium text-gray-800">{ngo.name}</td>
+                      <td className="px-3 py-3 text-sm text-gray-600">{ngo.type || '—'}</td>
+                      <td className="px-3 py-3 text-sm text-gray-800">
+                        {adoptedCounts.get(ngo.id) || 0}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              </div>
+              </div>
+            )}
+          </div>
+        </section>
+
         <section className="mt-10">
           <h3 className="text-xl font-bold text-gray-800 mb-3">Contact Details</h3>
 
           <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+            <div className="overflow-x-auto">
                 <table className="min-w-full table-fixed">
                   <thead className="sticky top-0 bg-gray-50 z-10">
                     <tr>
@@ -304,8 +394,12 @@ export default function Landing() {
                     ))}
                   </tbody>
                 </table>
+                </div>
           </div>
         </section>
+
+       
+
 
 
       </div>
