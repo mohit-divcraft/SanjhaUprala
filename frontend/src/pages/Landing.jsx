@@ -217,16 +217,30 @@ export default function Landing() {
     }
   }, [villages, activeTab])
 
-  const adoptedCounts = useMemo(() => {
-    const map = new Map()
-    for (const v of villages || []) {
-      for (const nv of (v.ngoVillages || [])) {
-        const id = nv.ngoId
-        map.set(id, (map.get(id) || 0) + 1)
+const adoptedCounts = useMemo(() => {
+  const map = new Map()
+
+  for (const v of villages || []) {
+    for (const nv of (v.ngoVillages || [])) {
+      const id = nv.ngoId
+      const villageId = nv.villageId
+
+      if (!map.has(id)) {
+        map.set(id, new Set())  // store unique villageIds in a Set
       }
+
+      map.get(id).add(villageId) // add villageId to the NGO’s set
     }
-    return map
-  }, [villages])
+  }
+
+  // convert sets into counts
+  for (const [id, set] of map.entries()) {
+    map.set(id, set.size)
+  }
+
+  return map
+}, [villages])
+
 
   // Optional: sort NGOs by adopted villages (desc)
   const ngosSorted = useMemo(() => {

@@ -524,7 +524,6 @@ app.post('/api/admin/events/upload-image', requireAdmin, upload.single('image'),
 app.get('/api/villages', async (req, res) => {
   try {
     const { q } = req.query;
-
     const villages = await prisma.village.findMany({
       where: q
         ? {
